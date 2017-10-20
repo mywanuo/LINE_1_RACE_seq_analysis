@@ -1,0 +1,75 @@
+include:
+    - defaults.conf
+
+
+
+run_id:         tailseq_1
+scratch_dir:    /home/smaegol/storage/analyses/tailseeker_test/scr3
+sources:
+    - id:       a
+      type:     MiSeq-V3-nano
+      dir:      /seq/tail_SEQ/tail_SEQ_1/151104_M01788_0064_000000000-D0KK1/
+      lane:     1
+
+experimental_samples:
+    L1rep_3RACE_si_cntrl_1:    ATCACG
+    L1rep_3RACE_overexp_Z6_1:    ACTGAT
+    L1rep_3RACE_overexp_Z6cm_1:    ATTCCT
+    L1rep_3RACE_overexp_Z11_1:    CAACTA
+    L1rep_3RACE_overexp_Z11cm_1:    CACGAT
+    L1rep_3RACE_overexp_p0_1:    CAGGCG
+    L1rep_3RACE_overexp_M10_1:    CATTTT
+    L1rep_3RACE_overexp_Z6_2:    ATGAGC
+    L1rep_3RACE_overexp_Z6cm_2:    CAAAAG
+    L1rep_3RACE_overexp_Z11_2:    CACCGG
+    L1rep_3RACE_overexp_Z11cm_2:    CACTCA
+    L1rep_3RACE_overexp_p0_2:    CATGGC
+    L1rep_3RACE_overexp_M10_2:    CCAACA
+    L1rep_3RACE_si_116_3:    CCGTCC
+    L1rep_3RACE_si_11_1:    CGATGT
+    L1rep_3RACE_si_6_1:    TTAGGC
+    L1rep_3RACE_si_116_1:    TGACCA
+    L1rep_3RACE_si_M10_1:    ACAGTG
+    L1rep_3RACE_si_cntrl_2:    CAGATC
+    L1rep_3RACE_si_11_2:    ACTTGA
+    L1rep_3RACE_si_6_2:    GATCAG
+    L1rep_3RACE_si_116_2:    TAGCTT
+    L1rep_3RACE_si_M10_2:    GGCTAC
+    L1rep_3RACE_si_cntrl_3:    AGTCAA
+    L1rep_3RACE_si_11_3:    AGTTCC
+    L1rep_3RACE_si_6_3:    ATGTCA
+    L1rep_3RACE_si_M10_3:    GTAGAG
+
+
+reference_set:
+    _exp: GRCh38
+
+spikein_samples:
+    spk8: GTGGCC
+    spk16: GTTTCG
+    spk32: CGTACG
+    spk64: GGTAGC
+ 
+spikein_lengths:
+    spk8: 8
+    spk16: 16
+    spk32: 32
+    spk64: 64
+
+read_cycles:
+    R5: [1, 51, 1]
+    Ri: [52, 57, 2]
+    R3: [58, 308, 3]
+
+dupcheck_regions:
+    _exp: [[21, 35], [58, 72]]
+
+analysis_level: 1
+
+performance:
+    enable_gsnap: yes
+
+third_party_basecaller:
+    R5: ''
+
+
