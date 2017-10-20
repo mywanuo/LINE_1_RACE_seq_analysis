@@ -1,11 +1,11 @@
 # RACE-seq
 
-## Procedure
+## Overview of the procedure
 
 * Run tailseeker3 (https://github.com/hyeshik/tailseeker) on your data
-* if required - perform additional demultiplexing based on primer sequences (we used modified sabre (https://github.com/najoshi/sabre) for this purpose)
+* if required - perform additional demultiplexing based on primer sequences (we used modified sabre (https://github.com/najoshi/sabre) for this purpose, available as a for at https://github.com/smaegol/sabre)
 * create samplesheet describing files to be analyzed, and they important features
-* for LINE sequences (or other repetitive elements) identification run repeatmasker using repeatmasker.sh script
+* for LINE sequences (or other repetitive elements) identification run repeatmasker using repeatmasker.sh script (may take a long time)
 * run analyze_tails.py script to get tails analysis done
 * perform additional analyzes in R using attached scripts
 
@@ -30,4 +30,27 @@
   - plyr
   - dplyr
   
+## Detailed procedure
+
+TBD
+
+
+## How to get LINE-specific repeatmasker library:
+
+* in the `util` subfolder in the RepeatMasker base directory run
+
+      ./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
   
+* extract LINEs names:
+
+      cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt
+
+* extract hmms for LINEs from homo sapiens LINEs library (located in `Libraries/Dfam_2.0/homo_sapiens/`) using hmmfetch
+
+      hmmfetch -f masklib.hmm lines_names.txt > LINEs.hmm
+
+* press obtained hmm database
+
+      hmmpress LINEs.hmm
+      
+* use this database in repeatmasker by specifying the exact path with the -d option  
