@@ -31,3 +31,22 @@
   - dplyr
   
   
+## How to get LINE-specific repeatmasker library:
+
+* in the `util` subfolder in the RepeatMasker base directory run
+
+      ./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
+  
+* extract LINEs names:
+
+      cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt
+
+* extract hmms for LINEs from homo sapiens LINEs library (located in `Libraries/Dfam_2.0/homo_sapiens/`) using hmmfetch
+
+      hmmfetch -f masklib.hmm lines_names.txt > LINEs.hmm
+
+* press obtained hmm database
+
+      hmmpress LINEs.hmm
+      
+* use this database in repeatmasker by specifying the exact path with the -d option  
