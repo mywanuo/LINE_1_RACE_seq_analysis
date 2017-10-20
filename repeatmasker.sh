@@ -26,8 +26,8 @@ module load fastx_toolkit
 #before start - set paths for software and libraries:
 repeat_masker="/home/smaegol/storage/soft/repeatmasker/RepeatMasker/RepeatMasker"
 repeat_masker_parsing="/home/smaegol/storage/soft/repeatmasker/Parsing-RepeatMasker-Outputs/parseRM_simple.pl -fast"
-clip_rmasker=`pwd`"/identify_LINE_repeatmasker.py"
-clip_rmasker_R3=`pwd`"/identify_LINE_repeatmasker_R3.py"
+clip_rmasker=`pwd`"/identify_LINE_repeatmasker_softclip.py"
+clip_rmasker_R3=`pwd`"/identify_LINE_repeatmasker_softclip_R3.py"
 lib_location="/home/smaegol/storage/soft/repeatmasker/RepeatMasker/Libraries/Dfam_2.0/homo_sapiens/LINEs/masklib.hmm"
 
 #options for repeatmasker
@@ -75,9 +75,14 @@ do
 	echo "Converting $R3_FILE to fasta ($fasta_R3)\n"
 	fastq_to_fasta -i $R3_FILE -o $fasta_R3 -Q33
 	#run repeatmasker using specified library
+	echo "Running repeatmasker on input fasta file"
 	$repeat_masker -lib $lib_location -div $max_divergence -u -source -xsmall -norna -nolow -qq -pa $threads $fasta_R3
 	#parse repeatmasker output using ParseRM_simple.pl from Parsing-RepeatMasker-Outputs
+	echo "Parsing repeatmasker output"
 	$repeat_masker_parsing -RMout $rmasker_out_R3 -genfile $fasta_R3
 	#clip fragments outside of identified LINE 
+	echo "Getting soft-clipped sequences"
 	$clip_rmasker_R3 --input $rmasker_parsed_R3 --fasta $fasta_R3 --output $clipped_rmasker_output_R3
 done
+
+echo "DONE ALL"
