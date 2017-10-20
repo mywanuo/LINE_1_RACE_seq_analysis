@@ -1,11 +1,11 @@
 # RACE-seq
 
-## Procedure
+## Overview of the procedure
 
 * Run tailseeker3 (https://github.com/hyeshik/tailseeker) on your data
-* if required - perform additional demultiplexing based on primer sequences (we used modified sabre (https://github.com/najoshi/sabre) for this purpose)
+* if required - perform additional demultiplexing based on primer sequences (we used modified sabre (https://github.com/najoshi/sabre) for this purpose, available as a for at https://github.com/smaegol/sabre)
 * create samplesheet describing files to be analyzed, and they important features
-* for LINE sequences (or other repetitive elements) identification run repeatmasker using repeatmasker.sh script
+* for LINE sequences (or other repetitive elements) identification run repeatmasker using repeatmasker.sh script (may take a long time)
 * run analyze_tails.py script to get tails analysis done
 * perform additional analyzes in R using attached scripts
 
@@ -30,7 +30,11 @@
   - plyr
   - dplyr
   
-  
+## Detailed procedure
+
+TBD
+
+
 ## How to get LINE-specific repeatmasker library:
 
 * in the `util` subfolder in the RepeatMasker base directory run
