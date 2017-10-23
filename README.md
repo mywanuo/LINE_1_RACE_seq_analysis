@@ -32,16 +32,24 @@
   
 ## Detailed procedure
 
-1. Run tailseeker using tailseeker.yaml file provided in the flowcell1/2 folders. Modify the tailseeker.yaml file (dir) to provide the proper path to flowcell data.
-	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail)
+1. Basecalling, deduplication, identification of A-tails
+	This step is done using tailseeker software (https://github.com/hyeshik/tailseeker). Configuration of tailseeker run is provided in the tailseeker.yaml file which can be found in the flowcell1/flowcell2 folders. Before running the tailseeker modify the file to provide the proper path to flowcell data (dir variable).
+	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail). 
+	Tailseeker is run using command:
 
 		tseek -j 
 	 
-2. Perform demultiplexing using `demultiplex_sabre.sh` (applies to flowcell2, which is multiplexed using primer sequences)
-	* Script should be run inside the `fastq` folder created by tailseeker3
-	* barcode files should be located inside the `fastq` folder
+2. Demultiplexing (only for flowcell2)
+	Demultiplexing is done using sabre (https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate pull request sent to the sabre developer).
+	Script prepared for this purpose require the barcode files used for demultiplex (which can be found in `flowcell2/sabre_barcodes`) are located in the same folder as fastq files which will be demultiplexed (folder `fastq` in the output of tailseeker). 
+	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 	
-3. Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers. 
+		./demultiplex_sabre.sh
+	
+3. LINE1 sequences identification
+	To identify LINE1 sequences in demultiplexed reads RepeatMasker (http://www.repeatmasker.org/) is used.
+	First, reads are converted from fastq to fasta using 
+Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers. 
 Fastq sequences are first converted to fasta. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the saeuencing reads and about non-templated nucleotides (possible tails)
 Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
