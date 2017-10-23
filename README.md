@@ -38,14 +38,16 @@
 	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail).
 	Tailseeker is run using command:
 
-  ```
-  tseek -j
-  ```
+	```
+	tseek -j
+	```
 
 2. **Demultiplexing (only for flowcell2)**
 
 	Demultiplexing is done using [sabre](https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate [pull request](https://github.com/najoshi/sabre/pull/8) sent to the sabre developer).
+
 	Script prepared for this purpose require the barcode files used for demultiplex (which can be found in `flowcell2/sabre_barcodes`) are located in the same folder as fastq files which will be demultiplexed (folder `fastq` in the output of tailseeker).
+
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
   ```
@@ -55,15 +57,15 @@
 3. **LINE1 sequences identification**
 
 	To identify LINE1 sequences in demultiplexed reads [RepeatMasker](http://www.repeatmasker.org/) is used.
-	First, reads are converted from fastq to fasta using
-	Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers.
-	Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_toolkit. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using `parseRM_simple.pl` from Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the sequencing reads and about non-templated nucleotides (possible tails).
+
+	Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_toolkit. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using `parseRM_simple.pl` from [Parsing-RepeatMasker-Outputs](https://github.com/4ureliek/Parsing-RepeatMasker-Outputs) and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the sequencing reads and about non-templated nucleotides (possible tails).
 
 	Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
 	```
 	./repeatmasker.sh
 	```
+	This part of analysis can be time-consuming.
 
 4. **Tails analysis**
 
