@@ -32,7 +32,19 @@
   
 ## Detailed procedure
 
-TBD
+1. Run tailseeker using tailseeker.yaml file provided in the flowcell1/2 folders. Modify the file (dir) to provide the proper path to flowcell data
+
+	 tseek -j 
+	 
+2. Perform demultiplexing using `demultiplex_sabre.sh`
+	* Script should be run inside the `fastq` folder created by tailseeker3
+	* barcode files should be located inside the `fastq` folder
+	
+3. Run repeatmasker	
+
+		./repeatmasker.sh
+		
+
 
 
 ## How to get LINE-specific repeatmasker library:
