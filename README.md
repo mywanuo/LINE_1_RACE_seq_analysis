@@ -16,7 +16,7 @@
 - Parsing-RepeatMasker-Outputs scripts downloaded (https://github.com/4ureliek/Parsing-RepeatMasker-Outputs)
 - fastx toolkit (http://hannonlab.cshl.edu/fastx_toolkit/)
 - bowtie2 (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- Python libraries installed: 
+- Python libraries installed:
   - biopython
   - pandas
   - numpy
@@ -29,33 +29,44 @@
   - ggplot2
   - plyr
   - dplyr
-  
+
 ## Detailed procedure
 
 1. Basecalling, deduplication, identification of A-tails
+
 	This step is done using tailseeker software (https://github.com/hyeshik/tailseeker). Configuration of tailseeker run is provided in the tailseeker.yaml file which can be found in the flowcell1/flowcell2 folders. Before running the tailseeker modify the file to provide the proper path to flowcell data (dir variable).
-	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail). 
+	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail).
 	Tailseeker is run using command:
 
-		tseek -j 
-	 
+  ```
+tseek -j```
+
 2. Demultiplexing (only for flowcell2)
+
 	Demultiplexing is done using sabre (https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate pull request sent to the sabre developer).
-	Script prepared for this purpose require the barcode files used for demultiplex (which can be found in `flowcell2/sabre_barcodes`) are located in the same folder as fastq files which will be demultiplexed (folder `fastq` in the output of tailseeker). 
+	Script prepared for this purpose require the barcode files used for demultiplex (which can be found in `flowcell2/sabre_barcodes`) are located in the same folder as fastq files which will be demultiplexed (folder `fastq` in the output of tailseeker).
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
-	
-		./demultiplex_sabre.sh
-	
+
+  ```
+./demultiplex_sabre.sh```
+
 3. LINE1 sequences identification
+
 	To identify LINE1 sequences in demultiplexed reads RepeatMasker (http://www.repeatmasker.org/) is used.
-	First, reads are converted from fastq to fasta using 
-Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers. 
-Fastq sequences are first converted to fasta. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the saeuencing reads and about non-templated nucleotides (possible tails)
-Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
+	First, reads are converted from fastq to fasta using
+Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers.
+Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_toolkit. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using `parseRM_simple.pl` from Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the sequencing reads and about non-templated nucleotides (possible tails).
 
-		./repeatmasker.sh
+  Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
-4. Run `analyze_race_seq_flowcell2.py`
+  ```
+./repeatmasker.sh```
+
+4. Tails analysis
+
+  In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2` 
+
+  Run `analyze_race_seq_flowcell2.py`
 
 
 
@@ -63,18 +74,20 @@ Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker
 
 * in the `util` subfolder in the RepeatMasker base directory run
 
-      ./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
-  
+  ```
+./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta```
+
 * extract LINEs names:
 
-      cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt
+  ```
+cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt```
 
 * extract hmms for LINEs from homo sapiens LINEs library (located in `Libraries/Dfam_2.0/homo_sapiens/`) using hmmfetch
-
-      hmmfetch -f masklib.hmm lines_names.txt > LINEs.hmm
-
+  ```
+  hmmfetch -f masklib.hmm lines_names.txt > LINEs.hmm```
 * press obtained hmm database
+  ```
+  hmmpress LINEs.hmm
+  ```
 
-      hmmpress LINEs.hmm
-      
 * use this database in repeatmasker by specifying the exact path with the -d option  
