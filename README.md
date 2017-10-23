@@ -38,8 +38,9 @@
 	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail).
 	Tailseeker is run using command:
 
-
-    tseek -j
+  ```
+  tseek -j
+  ```
 
 2. Demultiplexing (only for flowcell2)
 
@@ -48,27 +49,27 @@
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
   ```
-  ./demultiplex_sabre.sh```
+  ./demultiplex_sabre.sh
+  ```
 
 3. LINE1 sequences identification
 
 	To identify LINE1 sequences in demultiplexed reads RepeatMasker (http://www.repeatmasker.org/) is used.
 	First, reads are converted from fastq to fasta using
-Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers.
-Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_toolkit. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using `parseRM_simple.pl` from Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the sequencing reads and about non-templated nucleotides (possible tails).
+  Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers.
+  Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_toolkit. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using `parseRM_simple.pl` from Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the sequencing reads and about non-templated nucleotides (possible tails).
 
   Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
   ```
-./repeatmasker.sh
-```
+  ./repeatmasker.sh
+  ```
 
 4. Tails analysis
 
   In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2`
 
-  Run `analyze_race_seq_flowcell2.py`
-
+  Run `analyze_race_seq_flowcell2.py`.
 
 
 ## How to get LINE-specific repeatmasker library:
@@ -76,8 +77,8 @@ Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_t
 * in the `util` subfolder in the RepeatMasker base directory run
 
   ```
-./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
-```
+  ./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
+  ```
 
 * extract LINEs names:
 
