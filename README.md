@@ -32,7 +32,7 @@
 
 ## Detailed procedure
 
-1. Basecalling, deduplication, identification of A-tails
+1. **Basecalling, deduplication, identification of A-tails**
 
 	This step is done using [tailseeker software](https://github.com/hyeshik/tailseeker). Configuration of tailseeker run is provided in the tailseeker.yaml file which can be found in the flowcell1/flowcell2 folders. Before running the tailseeker modify the file to provide the proper path to flowcell data (dir variable).
 	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail).
@@ -42,9 +42,9 @@
   tseek -j
   ```
 
-2. Demultiplexing (only for flowcell2)
+2. **Demultiplexing (only for flowcell2)**
 
-	Demultiplexing is done using [sabre](https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate pull request sent to the sabre developer).
+	Demultiplexing is done using [sabre](https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate [pull request](https://github.com/najoshi/sabre/pull/8) sent to the sabre developer).
 	Script prepared for this purpose require the barcode files used for demultiplex (which can be found in `flowcell2/sabre_barcodes`) are located in the same folder as fastq files which will be demultiplexed (folder `fastq` in the output of tailseeker).
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
@@ -52,7 +52,7 @@
   ./demultiplex_sabre.sh
   ```
 
-3. LINE1 sequences identification
+3. **LINE1 sequences identification**
 
 	To identify LINE1 sequences in demultiplexed reads [RepeatMasker](http://www.repeatmasker.org/) is used.
 	First, reads are converted from fastq to fasta using
@@ -65,7 +65,7 @@
 	./repeatmasker.sh
 	```
 
-4. Tails analysis
+4. **Tails analysis**
 
 	In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2` with `--very-sensitive-local` option to get soft-clipping. Soft-clipped fragments are then retrieved using `get_softclipped_reads_from_sam.pl` script.
 
@@ -83,11 +83,13 @@
 	analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
 	```
 
-5. Statistical analysis, plasmid_match_no_tail_plasmid
+5. **Statistical analysis, plots**
 
 	Further analysis is done using R scripts.
 
-## How to get LINE-specific repeatmasker library:
+## How to get LINE-specific repeatmasker library
+
+For the identification of LINE1 sequences we used RepeatMasker run with the library containing only human LINE1 sequences. It can be easily prepared using scripts available in the RepeatMasker distribution and HMMER. The detailed procedure is shown below:
 
 * in the `util` subfolder in the RepeatMasker base directory run
 
