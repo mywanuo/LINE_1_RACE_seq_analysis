@@ -73,7 +73,7 @@
 
 	For the all analyzed files a samplesheet is required, which contains all information regarding the samples, including experimental conditions, primer used, transcript, etc. This file must be prepared before the analysis. Example is located in the `flowcell2` folder (`samplesheet.csv`). Default path to the samplesheet is provided in the script, but the alternative one can be provided with the `--samplesheet` option.
 
-  As the output (specified with the `--output` option) a tsv file is generated, containing tailing information for each sequence analysed, as well as additional data regarding the procedure.
+	As the output (specified with the `--output` option) a tsv file is generated, containing tailing information for each sequence analysed, as well as additional data regarding the procedure.
 
 	Before running the script it is required to customize settings (at the beginning of the script), like the path to `bowtie2`, number of threads it can use, names and locations of bowtie2 indexes.
 
