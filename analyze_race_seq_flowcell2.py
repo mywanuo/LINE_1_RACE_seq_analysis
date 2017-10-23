@@ -27,11 +27,11 @@ script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
 
 ###        !!!!!!!!!!!! Set paths and options before you start !!!!!!!!!!!!!!!!!! 	###
 
-bowtie2_path = "/usr/local/bioinformatics/bowtie2-2.2.3/bowtie2"
+bowtie2_path = "bowtie2"
 bowtie_threads = '10'
 get_sofclipped_script_path = script_path+"/get_softclipped_reads_from_sam.pl"
 identify_LINEs_script_path = script_path+"/identify_LINE_repeatmasker.py"
-transcript_genomes = 
+transcript_genomes =
 {'GAPDH' : script_path+'/indexes/GAPDH_noA',
 #'ENDOL1' : '/home/smaegol/storage/analyses/tail_seq_3/genome/ENDOL1/ENDOL1_merged_references_with_reporter',
 'REPORTERL1' : script_path+'/indexes/reporter_L1_sirna',
@@ -84,9 +84,9 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		R2 = R2 + '.rmasker.fasta'
 
 
-	#index R2 (R3 - tailseeker output) reads 
+	#index R2 (R3 - tailseeker output) reads
 	R2_reads = SeqIO.index(R2, "fasta")
-	
+
 	#dict storing results which will be saved in tsv file
 	tails_results = {}
 	final_results = {}
@@ -105,7 +105,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 	#read all fasta records from R1 (R5 - tailseeker) file
 	for record in SeqIO.parse(R1, "fasta"):
-		
+
 		seq_id = record.id #get id of read
 		tails_results[seq_id]={} #create dict for storing temp results for pair
 		tails_results[seq_id]['CTGAC_R5']=0 # set the initial value to 0
@@ -125,15 +125,15 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			record2=SeqRecord(Seq(''),description=">a0000:00000000:0000:0:0:\tclip5: \tclip3: \tpos: -1\tref: -1")
 			R3_seq=''
 			seq_R3_length=0
-		
+
 
 		#get all the information from the fasta header of both files (including tailseeker tail, softclipping, mapping position, template)
 		m1 = re.search('(?P<tile>.{5})\:(?P<position>\d{8})\:(?P<tailseq_score>\d{4})\:(?P<PCRduplicates>\d+)\:(?P<Atail_length>.*)\:(?P<additional_bases>.*)\tclip5: (?P<clip5>[ACGTN]*)\tclip3: (?P<clip3>[ACGTNacgtn]*)\tpos: (?P<pos>.*)\tref: (?P<ref>.*)',record.description)
 		m2 = re.search('(?P<tile>.{5})\:(?P<position>\d{8})\:(?P<tailseq_score>\d{4})\:(?P<PCRduplicates>\d+)\:(?P<Atail_length>.*)\:(?P<additional_bases>.*)\tclip5: (?P<clip5>[ACGTN]*)\tclip3: (?P<clip3>[ACGTNacgtn]*)\tpos: (?P<pos>.*)\tref: (?P<ref>.*)',record2.description)
-	
-	
-		
-		
+
+
+
+
 		#get sequences of 3' clipping (potential tails)
 		if (m1):
 			clipped_R5 = m1.group('clip3')
@@ -143,11 +143,11 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			clipped_R3 = m2.group('clip3')
 		else:
 			clipped_R3 = ""
-		
+
 		#get lengths of clipping:
 		clip3_R5_length = len(clipped_R5)
 		clip3_R3_length = len(clipped_R3)
-		
+
 		#get tailseq predictions from read id:
 		A_tail_length = m1.group('Atail_length')
 		T_tail_length = len(m1.group('additional_bases')) - 1
@@ -160,14 +160,14 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 		R5_mapping_pos = m1.group('pos')
 		R3_mapping_pos = m2.group('pos')
-		
+
 		#if R5 read sequence is composed only of A - discard
 		if (re.search(regex_for_A_only_in_seq,str(R5_seq))):
 			#print("found: " + seq_id)
 			R5_seq=''
 			clipped_R5=''
 			R5_mapping_pos="-1"
-		
+
 		#identify incorrectly predicted ends - if CTGAC spans mapping site
 		#can occur if the end of transcript is similar to the tailseq delimiter sequence(CTGAC)
 		merged_seq = R5_seq[-4:] + clipped_R5[0:4]
@@ -179,7 +179,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			R5_seq = R5_seq[:-len(matched_CTGAC)]
 			R5_mapping_pos = int(R5_mapping_pos) - len(matched_CTGAC)
 			clipped_R5 = matched_CTGAC + clipped_R5
-		
+
 		tails_results[seq_id]['heterogenous_end']=''
 		#check for the presence of CTGAC in clipped R5 fragments
 		#if yes - remove CTGAC and following bases, leave clipped fragment and correct its length
@@ -199,8 +199,8 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				clip3_R5_length=len(clipped_R5)
 				R5_seq=R5_seq + heterogenous_end
 				R5_mapping_pos = int(R5_mapping_pos) + number_heterogenous_nucleotides
-		
-		#if R3 read got soft-clipped	
+
+		#if R3 read got soft-clipped
 		if(clip3_R3_length>0):
 			#check if clipped fragment contains other stuff than A/U/AU tails (possible heterogenity of 3'end of LINE1)
 			match_heterogenous_end_tail_R3 = re.search(regex_for_heterogenous_end_tail,clipped_R3)
@@ -212,7 +212,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				clip3_R3_length_length=len(clipped_R3)
 				R3_seq=R3_seq + heterogenous_end
 				R3_mapping_pos = int(R3_mapping_pos) + number_heterogenous_nucleotides
-			
+
 		#get last mapped nucleotides - will be further used to identify A or U nucleotides which should be included in the tail sequence but were also present in the reference
 		if (R5_mapping_pos!="-1"):
 		#if R5 read was mapped
@@ -226,7 +226,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		#if read was not mapped - return NA
 			R5_last_mapped_nucleotide = 'NA'
 			R5_first_clipped_nucleotide = 'NA'
-		
+
 		#process R3 reads analogously to above:
 		if (R3_mapping_pos!="-1"):
 			R3_last_mapped_nucleotide = R3_seq[-1]
@@ -237,7 +237,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		else:
 			R3_last_mapped_nucleotide = 'NA'
 			R3_first_clipped_nucleotide = 'NA'
-			
+
 
 		#perform correction of obtained clipping sequences - in case if the first clipped nucletoide was A or U(T)
 		#then if last mapped nucleotide was A or U(T) - include them in the soft-clipped fragment
@@ -246,7 +246,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		if (R5_mapping_pos!=-1):
 			#check if the end of mapping was A (it is hard to determine if those are coded in genome or added later) (if first clipped is also A)
 			if ((R5_last_mapped_nucleotide=='A') & ((R5_first_clipped_nucleotide=='A') | (R5_first_clipped_nucleotide=='NA'))):
-				#if last mapped nucleotide is 'A' - check if all A mapped in the end of read could be tail 
+				#if last mapped nucleotide is 'A' - check if all A mapped in the end of read could be tail
 				#taking into account R5 read as it is more probable to have proper nucleotides than in the R3 read which has a large number of homopolymers
 				match_read_nucleotides = re.search(regex_for_genome_encoded_Atail,str(R5_seq))
 				if(match_read_nucleotides):
@@ -268,10 +268,10 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				else:
 					print("Error - should have a match")
 					sys.exit()
-					
+
 			#check if the end of mapping was T (it is hard to determine if those are coded in genome or added later) (if first clipped is also T)
 			if ((R5_last_mapped_nucleotide=='T') & ((R5_first_clipped_nucleotide=='T') | (R5_first_clipped_nucleotide=='NA'))):
-				#if last mapped nucleotide is 'T' - check if all T mapped in the end of read could be tail 
+				#if last mapped nucleotide is 'T' - check if all T mapped in the end of read could be tail
 				#taking into account R5 read as it is more probable to have proper nucleotides than in the R3 read which has a large number of homopolymers
 				match_read_nucleotides = re.search(regex_for_genome_encoded_Ttail,str(R5_seq))
 				if(match_read_nucleotides):
@@ -293,12 +293,12 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				else:
 					print("Error - should have a match")
 					sys.exit()
-		
-		
-			
-				
-		
-		
+
+
+
+
+
+
 		#store initial results in temp dict:
 		tails_results[seq_id]['tailseq_A_tail_length']=A_tail_length
 		tails_results[seq_id]['tailseq_additional_bases']=additional_bases
@@ -315,27 +315,27 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		tails_results[seq_id]['ref_name_R5']=ref_name_R5
 		tails_results[seq_id]['ref_name_R3']=ref_name_R3
 
-		
+
 		#check for the presence of overexpression plasmid in the clipped fragment (in case of reporter LINE1 analyses)
 		match_plasmid_R5=re.search(regex_for_plasmid_seq,clipped_R5)
 		if(match_plasmid_R5):
 			tails_results[seq_id]['tail_source']='plasmid_match_no_tail_plasmid'
 			tails_results[seq_id]['tail_sequence']=''
 			tails_results[seq_id]['mapping_position']=-1
-			
-		else:	
+
+		else:
 			#create representation of tailseq-identified tail
 			tailseq_tail=''
 			if (int(A_tail_length)>0):
 				for i in range(1,int(A_tail_length)):
 					tailseq_tail = tailseq_tail + "A"
 				tailseq_tail = tailseq_tail + additional_bases
-			
-			tails_results[seq_id]['tailseq_predicted_tail']=tailseq_tail
-			
 
-			
-			
+			tails_results[seq_id]['tailseq_predicted_tail']=tailseq_tail
+
+
+
+
 			if (tailseq_tail_length>0):
 			#if tailseq identified tail is > 0 bp
 			#treat this as a true tail but try to find this tails in the softclipping
@@ -373,7 +373,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 									tails_results[seq_id]['mapping_position']=R3_mapping_pos
 								else:
 									#else - treat R5 mapping as the proper one
-									tails_results[seq_id]['mapping_position']=R5_mapping_pos						
+									tails_results[seq_id]['mapping_position']=R5_mapping_pos
 						else:
 							#clipped sequences dont have the same length
 							#treat the tailseeker identified tail as the proper one
@@ -401,14 +401,14 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 									#if match found (R3 soft clipped fragment in R5 soft-clipped):
 									tails_results[seq_id]['matched_R3_tail_in_R5']=1
 									refined_R5_clip=tail_match.group('tail')
-									tails_results[seq_id]['processed_R5_clip']=refined_R5_clip	
+									tails_results[seq_id]['processed_R5_clip']=refined_R5_clip
 									if (len(refined_R5_clip)>tailseq_tail_length):
 										tails_results[seq_id]['tail_source']='tailseq_clip_clip_R3_longer_than_tailseq'
-										tails_results[seq_id]['tail_sequence']=tailseq_tail 
+										tails_results[seq_id]['tail_sequence']=tailseq_tail
 										tails_results[seq_id]['mapping_position']=int(R5_mapping_pos)
 									else:
 										tails_results[seq_id]['tail_source']='tailseq_clip_clip_R3_shorter_than_tailseq'
-										tails_results[seq_id]['tail_sequence']=tailseq_tail 
+										tails_results[seq_id]['tail_sequence']=tailseq_tail
 										tails_results[seq_id]['mapping_position']=int(R5_mapping_pos)
 								elif (tail_match2):
 									#if match found:
@@ -422,9 +422,9 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 									else:
 										tails_results[seq_id]['tail_source']='tailseq_clip_clip_R5_shorter_than_tailseq'
 										tails_results[seq_id]['tail_sequence']=tailseq_tail
-											
+
 								else:
-									tails_results[seq_id]['tail_source']='tailseq_clip_clipping_different_lengths'				
+									tails_results[seq_id]['tail_source']='tailseq_clip_clipping_different_lengths'
 									tails_results[seq_id]['tail_sequence']=tailseq_tail
 									tails_results[seq_id]['mapping_position']=-1 #cannot determine correct mapping position
 					else:
@@ -465,7 +465,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 								tails_results[seq_id]['processed_R3_clip']=tail_match.group('tail')
 								tails_results[seq_id]['tail_source']='tailseq_clip_heuristic_R3_clip'
 								tails_results[seq_id]['tail_sequence']=tailseq_tail
-								tails_results[seq_id]['mapping_position']=R3_mapping_pos		
+								tails_results[seq_id]['mapping_position']=R3_mapping_pos
 							else:
 								tails_results[seq_id]['tail_source']='tailseq_only_no_R5'
 								tails_results[seq_id]['tail_sequence']=tailseq_tail
@@ -474,9 +474,9 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 						tails_results[seq_id]['tail_source']='tailseq_clip_no_mapping_R5_R3'
 						tails_results[seq_id]['mapping_position']=-1
 						tails_results[seq_id]['tail_sequence']=tailseq_tail
-						
+
 			else:
-			#tailseq tail not found	
+			#tailseq tail not found
 			#have to identify tails based on clipping only
 				#process mapped reads:
 				if (m1.group('pos')!="-1"): #mapping of R5 read
@@ -487,7 +487,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 						if (clip3_R5_length==clip3_R3_length):
 							#if clipped sequences from both R5 and R3 read has the same length
 							if (clip3_R5_length>0): # if there is any clipping
-								if(tails_results[seq_id]['CTGAC_R5']>0): 
+								if(tails_results[seq_id]['CTGAC_R5']>0):
 								#check if clipping of R5 ends with tailseq delimiter CTGAC (identified at the beginning of analysis)
 									tails_results[seq_id]['tail_source']='no_tailseq_clip_R5_R3_CTGAC'
 									tails_results[seq_id]['tail_sequence']=clipped_R5
@@ -498,10 +498,10 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 									tails_results[seq_id]['tail_sequence']=clipped_R5
 									tails_results[seq_id]['mapping_position']=R5_mapping_pos
 							else:
-							#softclipping fragment got 0 length - treat as no_tail 
+							#softclipping fragment got 0 length - treat as no_tail
 								if (tails_results[seq_id]['CTGAC_R5']>0):
 								#check if clipping of R5 ends with tailseq delimiter CTGAC (identified at the beginning of analysis)
-									tails_results[seq_id]['tail_source']='no_tailseq_no_tail_CTGAC' 
+									tails_results[seq_id]['tail_source']='no_tailseq_no_tail_CTGAC'
 									tails_results[seq_id]['tail_sequence']=''
 									if (R5_mapping_pos==R3_mapping_pos):
 										#if sequences were mapped in the same position
@@ -511,9 +511,9 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 										tails_results[seq_id]['mapping_position']=R5_mapping_pos
 								else:
 									tails_results[seq_id]['tail_source']='no_tail'
-									tails_results[seq_id]['tail_sequence']=''	
+									tails_results[seq_id]['tail_sequence']=''
 									tails_results[seq_id]['mapping_position']=R5_mapping_pos
-									
+
 						else:
 							#clipped sequences dont have the same length
 							#both R3 and R5 have different length than tailseq identified tail
@@ -528,19 +528,19 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 								tails_results[seq_id]['mapping_position']=R5_mapping_pos
 								tails_results[seq_id]['tail_source']='no_tailseq_clip_clipping_different_lengths_R5'
 								tails_results[seq_id]['tail_sequence']=clipped_R5
-							
-					else:					
+
+					else:
 						#no R3 read was mapped, try to find tail in R5 read
 
 						if (tails_results[seq_id]['CTGAC_R5']>0):
 						#check if clipping of R5 ends with tailseq delimiter CTGAC (identified at the beginning of analysis)
 							if(clip3_R5_length==0):
-								#softclipping fragment got 0 length - treat as no_tail 
+								#softclipping fragment got 0 length - treat as no_tail
 								tails_results[seq_id]['tail_source']='no_tailseq_no_R3_R5_no_tail_CTGAC'
 								tails_results[seq_id]['tail_sequence']=''
 								tails_results[seq_id]['mapping_position']=R5_mapping_pos
 							else:
-								#else - store clipped fragment as a possible tail 
+								#else - store clipped fragment as a possible tail
 								tails_results[seq_id]['tail_source']='no_tailseq_no_R3_R5_no_tail_CTGAC'
 								tails_results[seq_id]['tail_sequence']=clipped_R5
 								tails_results[seq_id]['mapping_position']=R5_mapping_pos
@@ -549,7 +549,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 							tails_results[seq_id]['tail_source']='no_tailseq_no_R3_R5_clip'
 							tails_results[seq_id]['tail_sequence']=clipped_R5
 							tails_results[seq_id]['mapping_position']=R5_mapping_pos
-				else: 
+				else:
 				#if R5 was unmapped, check if R3 was mapped:
 					if (m2.group('pos')!="-1"):
 						#use heuristics (regex matching) to identify possible tail
@@ -568,9 +568,9 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 						tails_results[seq_id]['tail_source']='no_tailseq_no_mapping'
 						tails_results[seq_id]['tail_sequence']=''
 						tails_results[seq_id]['mapping_position']=-1;
-		
+
 		#### perform final processing of tail data
-		
+
 		tail_sequence = tails_results[seq_id]['tail_sequence']
 		final_results[seq_id]['tail_sequence']=tail_sequence #store final results for sequence
 		#initialize values:
@@ -586,8 +586,8 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		A_only_tail_match = re.match("^(?P<Atail>^A+$)",tail_sequence)
 		AU_tail_match = re.match("^(?P<Atail>^A+)(?P<Utail>T+)$",tail_sequence)
 		AG_tail_match = re.match("^(?P<Atail>^A+)(?P<Utail>G+)$",tail_sequence)
-		U_only_tail_match = re.match("^(?P<Utail>^T+$)",tail_sequence) 
-		UA_tail_match = re.match("^(?P<Utail>^T+)(?P<Atail>A+)$",tail_sequence) 
+		U_only_tail_match = re.match("^(?P<Utail>^T+$)",tail_sequence)
+		UA_tail_match = re.match("^(?P<Utail>^T+)(?P<Atail>A+)$",tail_sequence)
 		UG_tail_match = re.match("^(?P<Utail>^T+)(?P<Atail>G+)$",tail_sequence)
 		Amixed_match = re.match("^(?P<Atail>A+[TGCA]{0,5}?A+$)",tail_sequence)
 		Umixed_match = re.match("^(?P<Utail>T+[TGCA]{0,5}?T+$)",tail_sequence)
@@ -676,7 +676,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			Utail_length = len(Umixed_match.group("Utail"))
 			Gtail = ''
 			Gtail_length = 0
-			tail_type_for_anal = 'U_mixed'			
+			tail_type_for_anal = 'U_mixed'
 			tail_type = 'U_heterogenous'
 		elif (AmixedU_match):
 			Atail = AmixedU_match.group("Atail")
@@ -743,14 +743,14 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			tail_type = 'other'
 			tail_type_for_anal = 'other'
 
-		
+
 		if(tails_results[seq_id]['tail_source']=='plasmid_match_no_tail'):
 			tail_type='plasmid_match_no_tail'
 
 		final_results[seq_id]['tail_type']=tail_type
 		final_results[seq_id]['tail_type_mixed']=tail_type_for_anal
 		final_results[seq_id]['Atail']=Atail
-		final_results[seq_id]['Atail_length']=Atail_length	
+		final_results[seq_id]['Atail_length']=Atail_length
 		final_results[seq_id]['Utail']=Utail
 		final_results[seq_id]['Utail_length']=Utail_length
 		final_results[seq_id]['Gtail']=Gtail
@@ -783,7 +783,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		final_results[seq_id]['heterogenous_end']=tails_results[seq_id]['heterogenous_end']
 		final_results[seq_id]['heterogenous_end_R3']=tails_results[seq_id]['heterogenous_end_R3']
 
-		
+
 	return final_results
 
 
@@ -808,7 +808,7 @@ for R5_file in glob.glob(files_to_search):
 	file_parts = re.search("(?P<prefix>.*)_R5(?P<suffix>.*)",file_basename)
 	file_prefix = file_parts.group("prefix")
 	file_suffix = file_parts.group("suffix")
-	R5_fasta_file = file_prefix + "_.fasta" 
+	R5_fasta_file = file_prefix + "_.fasta"
 	R3_file = file_prefix + "_R3" + file_suffix #create R3 file name
 	SAM_file_R5 = R5_file + ".sam" #bowtie output files (SAM)
 	SAM_file_R3 = R3_file + ".sam" #bowtie output files (SAM)
@@ -832,7 +832,7 @@ for R5_file in glob.glob(files_to_search):
 	R5_records = list(SeqIO.parse(softclipped_fasta_R5, "fasta"))
 	if(len(R5_records)==0):
 		print("skipping paired analysis because no sequences found")
-	else:	
+	else:
 		print ("running bowtie on file " + R5_file + " with transcript " + transcript)
 		if os.path.isfile(SAM_file_R5):
 			print("bowtie output exists. skipping..")
@@ -856,19 +856,16 @@ for R5_file in glob.glob(files_to_search):
 
 		#Run the analysis of tails:
 		paired_results = analyze_tails(softclipped_fasta_R5,softclipped_fasta_R3,transcript,sample_name,localization,replicate,condition,cell_line,primer_name,person)
-		#Create pandas data frame with result 
+		#Create pandas data frame with result
 		tails_df = pd.DataFrame.from_dict(paired_results,orient='index')
 		#make sure data are saved after each library processed:
 		if (analyzed > 1):
 			tails_df.to_csv(args.output, mode='a', sep='\t',header=False)
 		else:
 			tails_df.to_csv(args.output, sep='\t')
-	
-	
+
+
 print("all " + str(analyzed) + " samples analyzed succesfully\n")
 
 
 ### END ###
-
-	
-

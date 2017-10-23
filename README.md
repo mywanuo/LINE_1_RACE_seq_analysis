@@ -67,9 +67,21 @@
 
 4. Tails analysis
 
-  In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2`
+  In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2` with `--very-sensitive-local` option to get soft-clipping. Soft-clipped fragments are then retrieved using `get_softclipped_reads_from_sam.pl` script.
 
-  Run `analyze_race_seq_flowcell2.py`.
+  Analysis is run on the all files with names ending with `_R5.fastq` in the folder specified with the `--inputdir` option. More specific selection can be done with the `--glob` option of the analysis script.
+
+  For the all analyzed files a samplesheet is required, which contains all information regarding the samples, including experimental conditions, primer used, transcript, etc. This file must be prepared before the analysis. Example is located in the `flowcell2` folder (`samplesheet.csv`). Default path to the samplesheet is provided in the script, but the alternative one can be provided with the `--samplesheet` option.
+
+  As the output (specified with the `--output` option) a tsv file is generated, containing tailing information for each sequence analysed, as well as additional data regarding the procedure.
+
+  Before running the script it is required to customize settings (at the beginning of the script), like the path to `bowtie2`, number of threads it can use, names and locations of bowtie2 indexes.
+
+  Analysis for the flowcell2 can be run using:
+
+    ```
+    analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
+    ```
 
 
 ## How to get LINE-specific repeatmasker library:
