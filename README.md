@@ -39,8 +39,8 @@
 	Tailseeker is run using command:
 
   ```
-tseek -j
-```
+  tseek -j
+  ```
 
 2. Demultiplexing (only for flowcell2)
 
@@ -49,8 +49,7 @@ tseek -j
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
   ```
-./demultiplex_sabre.sh
-```
+  ./demultiplex_sabre.sh```
 
 3. LINE1 sequences identification
 
