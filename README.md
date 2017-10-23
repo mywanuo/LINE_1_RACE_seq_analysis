@@ -39,7 +39,8 @@
 	Tailseeker is run using command:
 
   ```
-tseek -j```
+tseek -j
+```
 
 2. Demultiplexing (only for flowcell2)
 
@@ -48,7 +49,8 @@ tseek -j```
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
   ```
-./demultiplex_sabre.sh```
+./demultiplex_sabre.sh
+```
 
 3. LINE1 sequences identification
 
@@ -60,11 +62,12 @@ Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_t
   Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
   ```
-./repeatmasker.sh```
+./repeatmasker.sh
+```
 
 4. Tails analysis
 
-  In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2` 
+  In the next step the actual analysis is done. For the LINE1 sequences the information about non-templated nucleotides (possible tails) is already obtained. For other sequences (GAPDH, reporter LINE1) it is retrieved by mapping using `bowtie2`
 
   Run `analyze_race_seq_flowcell2.py`
 
@@ -75,12 +78,14 @@ Fastq sequences are first converted to fasta using `fastq_to_fasta` from fastx_t
 * in the `util` subfolder in the RepeatMasker base directory run
 
   ```
-./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta```
+./queryRepeatDatabase.pl -class "LINE" -species "Homo sapiens" > LINE_sequences.fasta
+```
 
 * extract LINEs names:
 
   ```
-cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt```
+cat LINE_sequences.fasta | grep "^>"  | cut -d' ' -f1 | sed -r 's/>(.*)/\1/' > LINE_names.txt
+```
 
 * extract hmms for LINEs from homo sapiens LINEs library (located in `Libraries/Dfam_2.0/homo_sapiens/`) using hmmfetch
   ```
