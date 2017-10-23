@@ -24,7 +24,7 @@
 module load fastx_toolkit
 
 #before start - set paths for software and libraries:
-repeat_masker="/home/smaegol/storage/soft/repeatmasker/RepeatMasker/RepeatMasker"
+repeat_masker=`which RepeatMasker`
 repeat_masker_parsing="/home/smaegol/storage/soft/repeatmasker/Parsing-RepeatMasker-Outputs/parseRM_simple.pl -fast"
 clip_rmasker=`pwd`"/identify_LINE_repeatmasker_softclip.py"
 clip_rmasker_R3=`pwd`"/identify_LINE_repeatmasker_softclip_R3.py"

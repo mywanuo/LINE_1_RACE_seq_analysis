@@ -32,18 +32,22 @@
   
 ## Detailed procedure
 
-1. Run tailseeker using tailseeker.yaml file provided in the flowcell1/2 folders. Modify the file (dir) to provide the proper path to flowcell data
+1. Run tailseeker using tailseeker.yaml file provided in the flowcell1/2 folders. Modify the tailseeker.yaml file (dir) to provide the proper path to flowcell data.
+	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail)
 
-	 tseek -j 
+		tseek -j 
 	 
-2. Perform demultiplexing using `demultiplex_sabre.sh`
+2. Perform demultiplexing using `demultiplex_sabre.sh` (applies to flowcell2, which is multiplexed using primer sequences)
 	* Script should be run inside the `fastq` folder created by tailseeker3
 	* barcode files should be located inside the `fastq` folder
 	
-3. Run repeatmasker	
+3. Run repeatmasker	to identify LINE1 sequences in RACE libraries prepeared using LINE1-specific primers. 
+Fastq sequences are first converted to fasta. Then, RepeatMasker is run over the LINE1-specific database. Obtained hits are parsed using Parsing-RepeatMasker-Outputs and analyzed using `identify_LINE_repeatmasker_softclip.py` to get information about location of LINE1 in the saeuencing reads and about non-templated nucleotides (possible tails)
+Scripts `identify_LINE_repeatmasker_softclip.py` and `identify_LINE_repeatmasker_softclip_R3.py` must be copied to the `processing_out_sabre` folder. `repeatmasker.sh` should be run in the same folder.
 
 		./repeatmasker.sh
-		
+
+4. Run `analyze_race_seq_flowcell2.py`
 
 
 
