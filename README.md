@@ -38,9 +38,7 @@
 	Tailseeker will generate R5 and R3 files, which are deduplicated (based on UMI sequences), and provide information about lengths of A-tails (and possible additions at the end of a tail).
 	Tailseeker is run using command:
 
-  ```
-  tseek -j
-  ```
+      tseek -j
 
 2. Demultiplexing (only for flowcell2)
 
