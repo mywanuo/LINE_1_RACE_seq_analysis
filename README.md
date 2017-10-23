@@ -79,9 +79,9 @@
 
   Analysis for the flowcell2 can be run using:
 
-    ```
-    analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
-    ```
+  ```
+analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
+  ```
 
 
 ## How to get LINE-specific repeatmasker library:
