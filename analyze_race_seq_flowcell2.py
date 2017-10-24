@@ -832,7 +832,7 @@ for R5_file in glob.glob(files_to_search):
 	R5_records = list(SeqIO.parse(R5_file, "fastq"))
 
 	if(len(R5_records)==0):
-		print("skipping paired analysis because no sequences found")
+		print("skipping analysis because no sequences found in the R5 file")
 	else:
 		if (transcript!='ENDOL1'):
 			genome=transcript_genomes[transcript] #get genome - index to be used for mapping
