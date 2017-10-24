@@ -7,6 +7,7 @@
 * create samplesheet describing files to be analyzed, and they important features
 * for LINE sequences (or other repetitive elements) identification run repeatmasker using `repeatmasker.sh` script (may take a long time)
 * run `analyze_race_seq_flowcell2` script to get tails analysis done
+* run `analyze_terminal_nucleotides.py` to analyze 3'-terminome
 * perform additional analyzes in R using attached scripts
 
 ## Requirements
@@ -83,10 +84,22 @@
  	Analysis for the flowcell2 can be run using:
 
 	```
-	analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
+	./analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
 	```
 
-5. **Statistical analysis, plots**
+5. **Terminal sequences analysis**
+
+	Interesting information regarding composition of 3' terminus of analyzed reads can be obtained by looking at most 3'-end nucleotides. The script for such analysis is attached, which analyze 3'-end nucleotides in defined windows (for our analysis we chose 7 nucleotides).
+
+	To run the script:
+
+	```
+	./analyze_terminal_nucleotides.py --inputdir processing_out_sabre/ --output flowcell2_terminal_nucleotides.tsv --window 7
+	```
+
+
+
+6. **Statistical analysis, plots**
 
 	Further analysis is done using R scripts.
 
