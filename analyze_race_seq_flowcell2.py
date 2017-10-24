@@ -829,7 +829,7 @@ for R5_file in glob.glob(files_to_search):
 	#if bowtie was not run before - run bowtie2 on R5 and R3 files:
 	#check if there is any sequence in R5 file, if not - skip analysis for this pair
 	R5_records = list(SeqIO.parse(R5_file, "fastq"))
-	
+
 	if(len(R5_records)==0):
 		print("skipping paired analysis because no sequences found")
 	else:
@@ -837,25 +837,25 @@ for R5_file in glob.glob(files_to_search):
 			genome=transcript_genomes[transcript] #get genome - index to be used for mapping
 			print ("running bowtie on file " + R5_file + " with transcript " + transcript)
 			if os.path.isfile(SAM_file_R5):
-				print("bowtie output exists. skipping..")
+				print("bowtie output exists. Will reuse previous results.")
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
 			if os.path.isfile(SAM_file_R3):
-				print("bowtie output exists. skipping..")
+				print("bowtie output exists. Will reuse previous results.")
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 
 			#if softclipping output does not exist or R5 and R3 reads - perform identification of soft clipped fragments:
 			if os.path.isfile(softclipped_fasta_R5):
-				print("softclipping output exists. skipping..")
+				print("softclipping output exists. Will reuse previous results.")
 			else:
 				subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R5 + " -output " + softclipped_fasta_R5, shell=True)
 			if os.path.isfile(softclipped_fasta_R3):
-				print("softclipping output exists. skipping..")
+				print("softclipping output exists. Will reuse previous results.")
 			else:
 				subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R3 + " -output " + softclipped_fasta_R3, shell=True)
 		else:
-			print("Skipping bowtie part because this is genomic LINE sequence")
+			print("Skipping bowtie part because genomic LINE sequences are processed using RepeatMasker")
 
 		#Run the analysis of tails:
 		paired_results = analyze_tails(softclipped_fasta_R5,softclipped_fasta_R3,transcript,sample_name,localization,replicate,condition,cell_line,primer_name,person)
@@ -865,7 +865,7 @@ for R5_file in glob.glob(files_to_search):
 		if (analyzed > 1):
 			tails_df.to_csv(args.output, mode='a', sep='\t',header=False)
 		else:
-			tails_df.to_csv(args.output, sep='\t')
+			tails_df.to_csv(args.output, sep='\t',header=True)
 
 
 print("all " + str(analyzed) + " samples analyzed succesfully\n")
