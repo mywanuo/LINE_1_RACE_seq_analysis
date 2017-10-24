@@ -87,16 +87,16 @@
 	./analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
 	```
 
+
 5. **Terminal sequences analysis**
 
-	Interesting information regarding composition of 3' terminus of analyzed reads can be obtained by looking at most 3'-end nucleotides. The script for such analysis is attached, which analyze 3'-end nucleotides in defined windows (for our analysis we chose 7 nucleotides).
+	Interesting information regarding composition of 3' terminus of analyzed reads can be obtained by looking at most 3'-end nucleotides. The script for such analysis is attached, which analyze 3'-end nucleotides in defined windows (for our analysis we chose 7 nucleotides). 3'-ends are analyzed using R3 reads from [tailseeker](https://github.com/hyeshik/tailseeker) output.
 
-	To run the script:
+	To run the script type in the terminal:
 
 	```
 	./analyze_terminal_nucleotides.py --inputdir processing_out_sabre/ --output flowcell2_terminal_nucleotides.tsv --window 7
 	```
-
 
 
 6. **Statistical analysis, plots**

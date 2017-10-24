@@ -87,3 +87,6 @@ tails_data_mapped_true_no_hetero_no_other_tails_NT<-tails_data_mapped_true_no_he
 tails_data_mapped_true_no_hetero_no_other_tails_NT1<-tails_data_mapped_true_no_hetero_no_other_tails[(tails_data_mapped_true_no_hetero_no_other_tails$condition=='NT' & tails_data_mapped_true_no_hetero_no_other_tails$localization=='TOTAL') | grepl("CYTO_NT",tails_data_mapped_true_no_hetero_no_other_tails$sample_name) ,]
 #filter out tails longer than 64nt - due to a limit of spike-ins used
 tails_data_mapped_true_no_hetero_no_other_tails_NT1<-tails_data_mapped_true_no_hetero_no_other_tails_NT1[tails_data_mapped_true_no_hetero_no_other_tails_NT1$tail_length<=64,]
+
+
+head(tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD)
