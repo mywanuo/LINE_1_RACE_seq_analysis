@@ -4,18 +4,20 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 
-melt_data_localization<-'/home/smaegol/storage/analyses/tail_seq_3/new/LINE_1_RACE_seq_analysis/flowcell2/fastq/processing_out_sabre/test.tsv'
+
+
+melt_data_localization <- "/home/smaegol/storage/analyses/tail_seq_3/new/LINE_1_RACE_seq_analysis/flowcell2/fastq/processing_out_sabre/test.tsv"
 
 #read tailing information to data.frame using data.table
-tails_data_melt<-fread(melt_data_localization,sep="\t",header=T,stringsAsFactors=T,data.table=F,showProgress=TRUE) # read data
+tails_data_melt <- fread(melt_data_localization, sep="\t", header=T, stringsAsFactors=T, data.table=F, showProgress=TRUE) # read data
 
-tails_data_melt$tailed<-tails_data_melt$tail_length>0 #mark tailed reads
-tails_data_melt$mapped<-tails_data_melt$mapping_position!=-1 #mark mapped reads
-tails_data_mapped<-tails_data_melt[tails_data_melt$mapped!=0,] #discard unmapped reads
+tails_data_melt$tailed <- tails_data_melt$tail_length>0 #mark tailed reads
+tails_data_melt$mapped <- tails_data_melt$mapping_position!=-1 #mark mapped reads
+tails_data_mapped <- tails_data_melt[tails_data_melt$mapped!=0,] #discard unmapped reads
 
 #head(tails_data_mapped)
-tails_data_mapped$ref_name_R5<-as.character(tails_data_mapped$ref_name_R5)
-tails_data_mapped$ref_name_R3<-as.character(tails_data_mapped$ref_name_R3)
+tails_data_mapped$ref_name_R5 <- as.character(tails_data_mapped$ref_name_R5)
+tails_data_mapped$ref_name_R3 <- as.character(tails_data_mapped$ref_name_R3)
 #tails_data_mapped_same_ref<-tails_data_mapped[tails_data_mapped$ref_name_R5==tails_data_mapped$ref_name_R3,]
 
 #mark uridylated reads

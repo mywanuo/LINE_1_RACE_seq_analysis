@@ -21,8 +21,6 @@
 #######################################################################################
 
 
-
-
 #specify location of sabre:
 sabre_script=`which sabre`
 sabre_max_mismatches='2' # max number of mismatches allowed in primer/barcode
@@ -47,8 +45,8 @@ do
 	sabre_output=$PREFIX_BASENAME"sabre_out.txt" # this file will contain all demultiplex statistics
 	output_R5_untrimmed=$out_dir'/'$PREFIX_BASENAME"R5_untrimmed.fastq" #location of untrimmed R5 reads
 	output_R3_untrimmed=$out_dir'/'$PREFIX_BASENAME"R3_untrimmed.fastq"	#location of untrimmed R3 reads
-	
+
 	#perform demultiplexing
 	$sabre_script pe -f $R5_file -r $R3_file -b $sabre_barcodes_file -u $output_R5_untrimmed -w $output_R3_untrimmed -m $sabre_max_mismatches > $sabre_output
-	
+
 done

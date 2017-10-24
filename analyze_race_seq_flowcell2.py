@@ -6,12 +6,12 @@
 ###    Copyright (C) 2017  Pawel Krawczyk (p.krawczyk@ibb.waw.pl)					###
 ###																					###
 ###    This program is free software: you can redistribute it and/or modify			###
-###    it under the terms of the GNU General Public License as published by			###
+### 	 it under the terms of the GNU General Public License as published by		###
 ###    the Free Software Foundation, either version 3 of the License, or			###
 ###    (at your option) any later version.											###
 ###																					###
 ###    This program is distributed in the hope that it will be useful,				###
-###    but WITHOUT ANY WARRANTY; without even the implied warranty of				###
+###	 but WITHOUT ANY WARRANTY; without even the implied warranty of					###
 ###    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the				###
 ###    GNU General Public License for more details.									###
 ###																					###
@@ -19,7 +19,6 @@
 ###    along with this program. If not, see <http://www.gnu.org/licenses/>.			###
 ###																					###
 #######################################################################################
-
 
 import os, sys
 #srcipt path is required to find the location of files required for analysis (indexes and other scripts)
@@ -31,26 +30,26 @@ bowtie2_path = "bowtie2"
 bowtie_threads = '10'
 get_sofclipped_script_path = script_path+"/get_softclipped_reads_from_sam.pl"
 identify_LINEs_script_path = script_path+"/identify_LINE_repeatmasker.py"
-transcript_genomes = {'GAPDH' : script_path+'/indexes/GAPDH_noA',
+transcript_genomes = {'GAPDH': script_path+'/indexes/GAPDH_noA',
 #'ENDOL1' : '/home/smaegol/storage/analyses/tail_seq_3/genome/ENDOL1/ENDOL1_merged_references_with_reporter',
-'REPORTERL1' : script_path+'/indexes/reporter_L1_sirna',
-'REPORTERL1_overexp' : script_path+'/indexes/reporter_L1_overexp',
-}
+                      'REPORTERL1': script_path+'/indexes/reporter_L1_sirna',
+                      'REPORTERL1_overexp': script_path+'/indexes/reporter_L1_overexp',
+                      }
 
-samplesheet_location=script_path+'/flowcell2/flowcell2_analysis_samplesheet.csv'
+samplesheet_location = script_path + '/flowcell2/flowcell2_analysis_samplesheet.csv'
+
 
 ###        !!!!!!!!!!!!                 					   !!!!!!!!!!!!!!!!!! 	###
-
 
 import argparse
 
 #parse command line arguments
 parser = argparse.ArgumentParser(description='Analyze paired output of tailseeker to identify tails')
 
-parser.add_argument('--inputdir', dest='inputdir', action='store', help='Input dir(required)',required=True)
-parser.add_argument('--output', dest='output', action='store', help='Output tsv file (required)',required=True)
-parser.add_argument('--glob', dest='glob', action='store', help='Custom specification of files to analyze (optional)',required=False)
-parser.add_argument('--samplesheet', dest='samplesheet', action='store', help='Alternative samplesheet (optional)',required=False)
+parser.add_argument('--inputdir', dest='inputdir', action='store', help='Input dir(required)', required=True)
+parser.add_argument('--output', dest='output', action='store', help='Output tsv file (required)', required=True)
+parser.add_argument('--glob', dest='glob', action='store', help='Custom specification of files to analyze (optional)', required=False)
+parser.add_argument('--samplesheet', dest='samplesheet', action='store', help='Alternative samplesheet (optional)', required=False)
 
 args = parser.parse_args()
 
@@ -58,7 +57,6 @@ args = parser.parse_args()
 from Bio import SeqIO
 import re
 import glob
-import numpy as np
 import pandas as pd
 from Bio.Seq import Seq
 import subprocess
@@ -112,18 +110,15 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		tails_results[seq_id]['heterogenous_end_R3']=''
 		final_results[seq_id]={} #create dict for storing final results for pair
 		R5_seq = record.seq #get seq of R5 read (after clipping)
-		seq_R5_length = len(record.seq) #length of R5 read
 
 		#check if mate is present in the R2 reads file (can be absent in case of rmasker output)
 		if(str(seq_id) in R2_reads):
 			record2 = R2_reads[str(seq_id)] # get R5 read from rmasker output
 			R3_seq=record2.seq # get seq of R3 read (after clipping)
-			seq_R3_length = len(record2.seq)
 		else:
 			#if mate is absent - create the empty read for compatibility with further processing steps
 			record2=SeqRecord(Seq(''),description=">a0000:00000000:0000:0:0:\tclip5: \tclip3: \tpos: -1\tref: -1")
 			R3_seq=''
-			seq_R3_length=0
 
 
 		#get all the information from the fasta header of both files (including tailseeker tail, softclipping, mapping position, template)
@@ -208,7 +203,6 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				number_heterogenous_nucleotides=len(heterogenous_end)
 				tails_results[seq_id]['heterogenous_end_R3']=heterogenous_end
 				clipped_R3=match_heterogenous_end_tail_R3.group("tail")
-				clip3_R3_length_length=len(clipped_R3)
 				R3_seq=R3_seq + heterogenous_end
 				R3_mapping_pos = int(R3_mapping_pos) + number_heterogenous_nucleotides
 
@@ -235,7 +229,6 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 				R3_first_clipped_nucleotide = 'NA'
 		else:
 			R3_last_mapped_nucleotide = 'NA'
-			R3_first_clipped_nucleotide = 'NA'
 
 
 		#perform correction of obtained clipping sequences - in case if the first clipped nucletoide was A or U(T)
@@ -602,7 +595,6 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		if (tail_sequence==''):
 			Atail = ''
 			Utail = ''
-			tail_length = 0
 			Atail_length = 0
 			Utail_length = 0
 			Gtail = ''
@@ -849,6 +841,7 @@ for R5_file in glob.glob(files_to_search):
 				if os.stat(SAM_file_R3).st_size > 0:
 					print("bowtie output " + SAM_file_R3 + " exists. Will reuse previous results.")
 				else:
+
 					print("bowtie output file " + SAM_file_R3 + " exists but is zero-size. Will attempt to rerun the mapping.")
 					subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 			else:

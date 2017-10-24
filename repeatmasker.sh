@@ -40,7 +40,6 @@ for f in `find . -name "L1*R5.fastq"`
 do
 	echo "Processing file: $f "
 	FILENAME_PREFIX=`expr match "$f" '\(.*\)R5'`
-	PREFIX_BASENAME=`expr match "$FILENAME_PREFIX" '.*\/\(.*\)'`
 	FILENAME_SUFFIX=`expr match "$f" '.*R5\(.*\)'`
 	fasta=$FILENAME_PREFIX"R5.fasta"
 	rmasker_out=$fasta".out"
@@ -57,14 +56,14 @@ do
 	#parse repeatmasker output using ParseRM_simple.pl from Parsing-RepeatMasker-Outputs
 	echo "Parsing repeatmasker output"
 	$repeat_masker_parsing -RMout $rmasker_out -genfile $fasta
-	#clip fragments outside of identified LINE 
+	#clip fragments outside of identified LINE
 	echo "Getting soft-clipped sequences"
 	$clip_rmasker --input $rmasker_parsed --fasta $fasta --output $clipped_rmasker_output
-	
+
 	#process R3 file - the same way like for R5
-	
+
 	R3_FILE=$FILENAME_PREFIX"R3"$FILENAME_SUFFIX
-	echo $R3_file
+	echo $R3_FILE
 	fasta_R3=$FILENAME_PREFIX"R3.fasta"
 	rmasker_out_R3=$fasta_R3".out"
 	rmasker_parsed_R3=$rmasker_out_R3".parsed1/"$rmasker_out_R3".length.tab"
@@ -80,7 +79,7 @@ do
 	#parse repeatmasker output using ParseRM_simple.pl from Parsing-RepeatMasker-Outputs
 	echo "Parsing repeatmasker output"
 	$repeat_masker_parsing -RMout $rmasker_out_R3 -genfile $fasta_R3
-	#clip fragments outside of identified LINE 
+	#clip fragments outside of identified LINE
 	echo "Getting soft-clipped sequences"
 	$clip_rmasker_R3 --input $rmasker_parsed_R3 --fasta $fasta_R3 --output $clipped_rmasker_output_R3
 done

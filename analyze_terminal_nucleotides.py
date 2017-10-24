@@ -20,7 +20,6 @@
 ###																					###
 #######################################################################################
 
-
 import os, sys
 import argparse
 
@@ -41,12 +40,9 @@ args = parser.parse_args()
 from Bio import SeqIO
 import re
 import glob
-import numpy as np
 import pandas as pd
 from Bio.Seq import Seq
-import subprocess
 from Bio.SeqRecord import SeqRecord
-from Bio.Seq import Seq
 
 #get samplesheet from command-line
 samplesheet_location=script_path+'/flowcell2/flowcell2_analysis_samplesheet.csv'
@@ -77,18 +73,16 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		seq_id = record.id #get id of read
 		tails_results[seq_id]={} #create dict for storing results of pair
 		final_results[seq_id]={} #create dict for storing results of pair
-		R5_seq = record.seq #get seq of R5 read (after clipping)
 
 		#check if mate is present in the R2 reads file (can be absent in case of rmasker
 		if(str(seq_id) in R2_reads):
 			record2 = R2_reads[str(seq_id)] # get R3 read from rmasker output
 			R3_seq=record2.seq # get seq of R3 read (after clipping)
 			R3_seq=R3_seq.reverse_complement()
-			seq_R3_length = len(record2.seq)
+
 		else:
 			record2=SeqRecord(Seq(''),description=">a0000:00000000:0000:0:0:\tclip5: \tclip3: \tpos: -1\tref: -1")
 			R3_seq=''
-			seq_R3_length=0
 
 		#get terminal nucleotides information:
 		terminal_nucleotides=get_3end_nucleotides(R3_seq,args.window)
