@@ -216,7 +216,7 @@ for R5_file in glob.glob(files_to_search):
 		print("skipping analysis because no sequences found in the R5 file")
 	else:
 		#Run the analysis of tails:
-		paired_results = analyze_tails(softclipped_fasta_R5,softclipped_fasta_R3,transcript,sample_name,localization,replicate,condition,cell_line,primer_name,person)
+		paired_results = analyze_tails(R5_file,R3_file,transcript,sample_name,localization,replicate,condition,cell_line,primer_name,person)
 		#Create pandas data frame with result
 		tails_df = pd.DataFrame.from_dict(paired_results,orient='index')
 
