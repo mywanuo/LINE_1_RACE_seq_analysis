@@ -838,11 +838,18 @@ for R5_file in glob.glob(files_to_search):
 			genome=transcript_genomes[transcript] #get genome - index to be used for mapping
 			print ("running bowtie on file " + R5_file + " with transcript " + transcript)
 			if os.path.isfile(SAM_file_R5):
-				print("bowtie output exists. Will reuse previous results.")
+				if os.stat(SAM_file_R5).st_size > 0:
+					print("bowtie output %s exists. Will reuse previous results.".SAM_file_R5)
+				else:
+					print("bowtie output file exists but is zero-size. Will attempt to rerun the mapping.")
+					subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
 			if os.path.isfile(SAM_file_R3):
-				print("bowtie output exists. Will reuse previous results.")
+				if os.stat(SAM_file_R3).st_size > 0:
+					print("bowtie output exists. Will reuse previous results.")
+				else:
+					print("bowtie output file exists but is zero-size. Will attempt to rerun the mapping.")
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 
@@ -866,7 +873,7 @@ for R5_file in glob.glob(files_to_search):
 		if (analyzed > 1):
 			tails_df.to_csv(args.output, mode='a', sep='\t',header=False)
 		else:
-			tails_df.to_csv(args.output, sep='\t',header=True)
+			tails_df.to_csv(args.output, mode='w', sep='\t',header=True)
 
 
 print("all " + str(analyzed) + " samples analyzed succesfully\n")
