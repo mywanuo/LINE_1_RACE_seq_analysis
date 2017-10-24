@@ -839,27 +839,36 @@ for R5_file in glob.glob(files_to_search):
 			print ("running bowtie on file " + R5_file + " with transcript " + transcript)
 			if os.path.isfile(SAM_file_R5):
 				if os.stat(SAM_file_R5).st_size > 0:
-					print("bowtie output "+SAM_file_R5+" exists. Will reuse previous results.")
+					print("bowtie output " + SAM_file_R5 + " exists. Will reuse previous results.")
 				else:
-					print("bowtie output file exists but is zero-size. Will attempt to rerun the mapping.")
+					print("bowtie output file " + SAM_file_R5 + " exists but is zero-size. Will attempt to rerun the mapping.")
 					subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
 			if os.path.isfile(SAM_file_R3):
 				if os.stat(SAM_file_R3).st_size > 0:
-					print("bowtie output exists. Will reuse previous results.")
+					print("bowtie output " + SAM_file_R3 + " exists. Will reuse previous results.")
 				else:
-					print("bowtie output file exists but is zero-size. Will attempt to rerun the mapping.")
+					print("bowtie output file " + SAM_file_R3 + " exists but is zero-size. Will attempt to rerun the mapping.")
+					subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 			else:
 				subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 
 			#if softclipping output does not exist or R5 and R3 reads - perform identification of soft clipped fragments:
 			if os.path.isfile(softclipped_fasta_R5):
-				print("softclipping output exists. Will reuse previous results.")
+				if os.stat(softclipped_fasta_R5).st_size > 0:
+					print("softclipping output " + softclipped_fasta_R5 + " exists. Will reuse previous results.")
+				else:
+					print("softclipping output file " + softclipped_fasta_R5 + " exists but is zero-size. Will attempt to rerun the analysis.")
+					subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R5 + " -output " + softclipped_fasta_R5, shell=True)
 			else:
 				subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R5 + " -output " + softclipped_fasta_R5, shell=True)
 			if os.path.isfile(softclipped_fasta_R3):
-				print("softclipping output exists. Will reuse previous results.")
+				if os.stat(softclipped_fasta_R3).st_size > 0:
+					print("softclipping output " + softclipped_fasta_R3 + " exists. Will reuse previous results.")
+				else:
+					print("softclipping output file " + softclipped_fasta_R3 + " exists but is zero-size. Will attempt to rerun the analysis.")
+					subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R3 + " -output " + softclipped_fasta_R3, shell=True)
 			else:
 				subprocess.call(get_sofclipped_script_path + " -input " + SAM_file_R3 + " -output " + softclipped_fasta_R3, shell=True)
 		else:
