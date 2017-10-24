@@ -839,7 +839,7 @@ for R5_file in glob.glob(files_to_search):
 			print ("running bowtie on file " + R5_file + " with transcript " + transcript)
 			if os.path.isfile(SAM_file_R5):
 				if os.stat(SAM_file_R5).st_size > 0:
-					print("bowtie output %s exists. Will reuse previous results.".SAM_file_R5)
+					print("bowtie output "+SAM_file_R5+" exists. Will reuse previous results.")
 				else:
 					print("bowtie output file exists but is zero-size. Will attempt to rerun the mapping.")
 					subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 + " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
