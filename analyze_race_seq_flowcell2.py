@@ -31,8 +31,7 @@ bowtie2_path = "bowtie2"
 bowtie_threads = '10'
 get_sofclipped_script_path = script_path+"/get_softclipped_reads_from_sam.pl"
 identify_LINEs_script_path = script_path+"/identify_LINE_repeatmasker.py"
-transcript_genomes =
-{'GAPDH' : script_path+'/indexes/GAPDH_noA',
+transcript_genomes = {'GAPDH' : script_path+'/indexes/GAPDH_noA',
 #'ENDOL1' : '/home/smaegol/storage/analyses/tail_seq_3/genome/ENDOL1/ENDOL1_merged_references_with_reporter',
 'REPORTERL1' : script_path+'/indexes/reporter_L1_sirna',
 'REPORTERL1_overexp' : script_path+'/indexes/reporter_L1_overexp',
@@ -114,7 +113,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		final_results[seq_id]={} #create dict for storing final results for pair
 		R5_seq = record.seq #get seq of R5 read (after clipping)
 		seq_R5_length = len(record.seq) #length of R5 read
-		
+
 		#check if mate is present in the R2 reads file (can be absent in case of rmasker output)
 		if(str(seq_id) in R2_reads):
 			record2 = R2_reads[str(seq_id)] # get R5 read from rmasker output
@@ -599,7 +598,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 
 
-
+	# analyze tail types
 		if (tail_sequence==''):
 			Atail = ''
 			Utail = ''
@@ -747,6 +746,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		if(tails_results[seq_id]['tail_source']=='plasmid_match_no_tail'):
 			tail_type='plasmid_match_no_tail'
 
+#store final results
 		final_results[seq_id]['tail_type']=tail_type
 		final_results[seq_id]['tail_type_mixed']=tail_type_for_anal
 		final_results[seq_id]['Atail']=Atail
@@ -785,7 +785,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 
 	return final_results
-
+#end
 
 
 analyzed = 0

@@ -16,6 +16,7 @@
 - Parsing-RepeatMasker-Outputs scripts downloaded (https://github.com/4ureliek/Parsing-RepeatMasker-Outputs)
 - fastx toolkit (http://hannonlab.cshl.edu/fastx_toolkit/)
 - bowtie2 (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+- Python 3
 - Python libraries installed:
   - biopython
   - pandas
@@ -50,9 +51,9 @@
 
 	To perform demultiplexing copy `demultiplex_sabre.sh` to the `fastq` folder and run:
 
-  ```
-  ./demultiplex_sabre.sh
-  ```
+	```
+	./demultiplex_sabre.sh
+	```
 
 3. **LINE1 sequences identification**
 
