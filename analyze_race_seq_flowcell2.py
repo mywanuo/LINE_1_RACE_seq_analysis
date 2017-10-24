@@ -598,7 +598,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 
 
-	# analyze tail types
+		# analyze tail types
 		if (tail_sequence==''):
 			Atail = ''
 			Utail = ''
@@ -746,7 +746,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		if(tails_results[seq_id]['tail_source']=='plasmid_match_no_tail'):
 			tail_type='plasmid_match_no_tail'
 
-#store final results
+		#store final results
 		final_results[seq_id]['tail_type']=tail_type
 		final_results[seq_id]['tail_type_mixed']=tail_type_for_anal
 		final_results[seq_id]['Atail']=Atail
@@ -785,6 +785,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 
 	return final_results
+
 #end
 
 
