@@ -48,15 +48,12 @@ import subprocess
 from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
 
-
+#get samplesheet from command-line
 samplesheet_location=script_path+'/flowcell2/flowcell2_analysis_samplesheet.csv'
 if(args.samplesheet):
 	samplesheet_location=args.samplesheet
+#read samplesheet into pandas dataframe
 data = pd.DataFrame.from_csv(samplesheet_location, sep='\t')
-
-
-all_results = {}
-
 
 #function returns n last nucleotides of sequence (where n is specified with --windows option)
 def get_3end_nucleotides(sequence,window_size):
@@ -65,36 +62,22 @@ def get_3end_nucleotides(sequence,window_size):
 	return(terminal_nucleotides)
 
 
+#main processing function
 def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,cell_line,primer_name,person):
-
-
+	#index R2(3'-end) reads
 	R2_reads = SeqIO.index(R2, "fastq")
 
 	#dict storing results which will be saved in tsv file
 	tails_results = {}
 	final_results = {}
 
-	regex_for_heuristic_tail_identification_R5 = r"(?P<tail>^A{2}A*[TGC]?A*[TGC]?A{2}A*T*|^A{2}A*[TGC]?A*T*|^A+T*|^T+|^T+[ACG]?T+|^T+A*)CTGAC(?P<rest_of_clip>.*)"
-	regex_for_heuristic_tail_identification_R3 = r"(?P<tail>^A{2}A*[TGC]?A*[TGC]?A{2}A*T*|^A{2}A*[TGC]?A*T*|^A+T*|^T+|^T+[ACG]?T+|^T+A*)(?P<rest_of_clip>.*)"
-	regex_for_no_tail_R5 = r"^(?P<adapter_fragment>CTGAC).*"
-	regex_for_R5_CTGAC = r"^(?P<possible_tail>.*CTGAC)(?P<adapter_15N_etc>.*)"
-	regex_for_tail_R5_CTGAC = r"^(?P<possible_tail>.*?)CTGAC(?P<other>.*)"
-	regex_for_genome_encoded_Atail = r"(?P<genome_encoded_tail>A+)$"
-	regex_for_genome_encoded_Ttail = r"(?P<genome_encoded_tail>T+)$"
-	regex_for_plasmid_seq = r"^(?P<plasmid_seq>GGGGTGGGCG.*)"
-	regex_for_heterogenous_end_tail = r"^(?P<genomic_fragment>.*?)(?P<tail>AA+|TT+|AA+T+)"
-	regex_for_A_only_in_seq = r"^A*$"
-
-
-	#read all fasta records from R1 (R5) file
+	#read all fastq records from R1 (R5) file
 	for record in SeqIO.parse(R1, "fastq"):
 
 		seq_id = record.id #get id of read
 		tails_results[seq_id]={} #create dict for storing results of pair
 		final_results[seq_id]={} #create dict for storing results of pair
 		R5_seq = record.seq #get seq of R5 read (after clipping)
-
-		seq_R5_length = len(record.seq) #length of R5 read
 
 		#check if mate is present in the R2 reads file (can be absent in case of rmasker
 		if(str(seq_id) in R2_reads):
@@ -107,6 +90,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			R3_seq=''
 			seq_R3_length=0
 
+		#get terminal nucleotides information:
 		terminal_nucleotides=get_3end_nucleotides(R3_seq,args.window)
 		number_U_in_terminal=terminal_nucleotides.count("T")
 		number_A_in_terminal=terminal_nucleotides.count("A")
@@ -117,9 +101,7 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 		ratio_C_in_terminal=number_C_in_terminal/int(args.window)
 		ratio_G_in_terminal=number_G_in_terminal/int(args.window)
 
-
-
-
+		#store final results
 		final_results[seq_id]['transcript']=transcript
 		final_results[seq_id]['cell_line']=cell_line
 		final_results[seq_id]['person']=person
@@ -142,16 +124,13 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 
 	return final_results
 
-
-
-#sys.exit()
-
 analyzed = 0
 os.chdir(args.inputdir)
 
-analyzed
+#define default files to search
 files_to_search = "*R5.fastq"
 
+#get files to search from command-line (if present)
 if (args.glob):
 	files_to_search = args.glob
 
