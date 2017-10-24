@@ -24,6 +24,9 @@
 import os, sys
 import argparse
 
+#srcipt path is required to find the location of files required for analysis (indexes and other scripts)
+script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+
 #parse command line arguments
 parser = argparse.ArgumentParser(description='analyze terminal nucleotides of reads')
 parser.add_argument('--inputdir', dest='inputdir', action='store', help='Input dir(required)',required=True)
@@ -33,17 +36,6 @@ parser.add_argument('--glob', dest='glob', action='store', help='Custom glob for
 parser.add_argument('--samplesheet', dest='samplesheet', action='store', help='Custom samplesheet location (optional)',required=False)
 
 args = parser.parse_args()
-
-#bowtie2_path = "/media/usr/anaconda3/bin/bowtie2"
-bowtie2_path = "/usr/local/bioinformatics/bowtie2-2.2.3/bowtie2"
-bowtie_threads = '10'
-get_sofclipped_script_path = "/home/smaegol/storage/analyses/tail_seq_3/get_softclipped_reads_from_sam.pl"
-identify_LINEs_script_path = "/home/smaegol/storage/analyses/tail_seq_3/identify_LINE_repeatmasker.py"
-
-#get_sofclipped_script_path = "/home/smaegol/
-
-print(args.inputdir)
-
 
 
 from Bio import SeqIO
