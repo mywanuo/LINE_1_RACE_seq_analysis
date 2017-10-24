@@ -107,37 +107,6 @@ def analyze_tails(R1,R2,transcript,sample_name,localization,replicate,condition,
 			R3_seq=''
 			seq_R3_length=0
 
-
-
-		#check for the presence of overexpression plasmid in the clipped fragment (in case of reporter LINE1 analyses)
-		match_plasmid_R5=re.search(regex_for_plasmid_seq,clipped_R5)
-		if(match_plasmid_R5):
-			tails_results[seq_id]['tail_source']='plasmid_match_no_tail_plasmid'
-			tails_results[seq_id]['tail_sequence']=''
-			tails_results[seq_id]['mapping_position']=-1
-
-		else:
-			#create representation of tailseq-identified tail
-			tailseq_tail=''
-			if (int(A_tail_length)>0):
-				for i in range(1,int(A_tail_length)):
-					tailseq_tail = tailseq_tail + "A"
-				tailseq_tail = tailseq_tail + additional_bases
-
-			tails_results[seq_id]['tailseq_predicted_tail']=tailseq_tail
-
-
-
-			tails_results[seq_id]['mapping_position']=R5_mapping_pos
-
-			if (tailseq_tail_length>0):
-				tails_results[seq_id]['tail_sequence']=tailseq_tail
-			#if tailseq identified tail is > 0 bp
-			else:
-			#tailseq tail not found
-				tails_results[seq_id]['tail_sequence']=''
-
-
 		terminal_nucleotides=get_3end_nucleotides(R3_seq,args.window)
 		number_U_in_terminal=terminal_nucleotides.count("T")
 		number_A_in_terminal=terminal_nucleotides.count("A")
