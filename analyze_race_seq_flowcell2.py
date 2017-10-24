@@ -829,7 +829,7 @@ for R5_file in glob.glob(files_to_search):
 	primer_name=temp['primer_name'][0] #name of the primer used in RACE
 	#if bowtie was not run before - run bowtie2 on R5 and R3 files:
 	#check if there is any sequence in R5 file, if not - skip analysis for this pair
-	R5_records = list(SeqIO.parse(softclipped_fasta_R5, "fasta"))
+	R5_records = list(SeqIO.parse(R5_file, "fastq"))
 	if(len(R5_records)==0):
 		print("skipping paired analysis because no sequences found")
 	else:
