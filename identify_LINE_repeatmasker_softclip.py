@@ -121,7 +121,7 @@ for row in data.itertuples():
 # include sequences for which LINE sequences were not found
 for record in SeqIO.parse(args.fastafile, "fasta"):
     seq_id = record.id  # get id of read
-    if (seq_name in seq_names):
+    if (seq_id in seq_names):
         next
     else:
         whole_seq = record.seq
