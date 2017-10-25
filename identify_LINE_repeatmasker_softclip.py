@@ -118,19 +118,17 @@ for row in data.itertuples():
         seq_records.append(processed_seq)
 
 
-
-
-#include sequences for which LINE sequences were not found
+# include sequences for which LINE sequences were not found
 for record in SeqIO.parse(args.fastafile, "fasta"):
     seq_id = record.id  # get id of read
     if (seq_name in seq_names):
         next
     else:
         whole_seq = record.seq
-        clip_seq = str(clip_seq_obj.reverse_complement())
+        #clip_seq = str(whole_seq.reverse_complement())
         seq_descr = "\tclip5: \tclip3: \tpos: -1\tref: -1"
         processed_seq = SeqRecord(
-            Seq(str(clip_seq)), id=seq_id, description=str(seq_descr))
+            Seq(str(whole_seq)), id=seq_id, description=str(seq_descr))
         seq_records.append(processed_seq)
 
 # write fasta output file
