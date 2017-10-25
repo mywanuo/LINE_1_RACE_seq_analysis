@@ -19,6 +19,7 @@
 ###                                                                                 ###
 #######################################################################################
 
+
 import os
 import sys
 # srcipt path is required to find the location of files required for analysis (indexes and other scripts)
@@ -91,12 +92,14 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
 
     # for L1 sequences - use repeatmasker files
     if((transcript == 'ENDOL1') or (transcript == 'REPORTERL1')):
+        R2_fastq_name = r"
+        R2_fastq =  SeqIO.index(R2, "fastq")
         R1 = R1 + '.rmasker.fasta'
         R2 = R2 + '.rmasker.fasta'
 
+
     # index R2 (R3 - tailseeker output) reads
     R2_reads = SeqIO.index(R2, "fasta")
-
     # dict storing results which will be saved in tsv file
     tails_results = {}
     final_results = {}
@@ -139,18 +142,18 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
         tails_results[seq_id]['terminal_nucleotides'] = terminal_nucleotides
 
         # get all the information from the fasta header of both files (including tailseeker tail, softclipping, mapping position, template)
-        m1 = re.search(
+        regex_match_for_R1 = re.search(
             '(?P<tile>.{5})\:(?P<position>\d{8})\:(?P<tailseq_score>\d{4})\:(?P<PCRduplicates>\d+)\:(?P<Atail_length>.*)\:(?P<additional_bases>.*)\tclip5: (?P<clip5>[ACGTN]*)\tclip3: (?P<clip3>[ACGTNacgtn]*)\tpos: (?P<pos>.*)\tref: (?P<ref>.*)', record.description)
-        m2 = re.search(
+        regex_match_for_R2 = re.search(
             '(?P<tile>.{5})\:(?P<position>\d{8})\:(?P<tailseq_score>\d{4})\:(?P<PCRduplicates>\d+)\:(?P<Atail_length>.*)\:(?P<additional_bases>.*)\tclip5: (?P<clip5>[ACGTN]*)\tclip3: (?P<clip3>[ACGTNacgtn]*)\tpos: (?P<pos>.*)\tref: (?P<ref>.*)', record2.description)
 
         #get sequences of 3' clipping (potential tails)
-        if (m1):
-            clipped_R5 = m1.group('clip3')
+        if (regex_match_for_R1):
+            clipped_R5 = regex_match_for_R1.group('clip3')
         else:
             clipped_R5 = ""
-        if (m2):
-            clipped_R3 = m2.group('clip3')
+        if (regex_match_for_R2):
+            clipped_R3 = regex_match_for_R2.group('clip3')
         else:
             clipped_R3 = ""
 
@@ -159,17 +162,17 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
         clip3_R3_length = len(clipped_R3)
 
         # get tailseq predictions from read id:
-        A_tail_length = m1.group('Atail_length')
-        T_tail_length = len(m1.group('additional_bases')) - 1
-        additional_bases = m1.group('additional_bases')
-        ref_name_R5 = m1.group('ref')
-        ref_name_R3 = m2.group('ref')
+        A_tail_length = regex_match_for_R1.group('Atail_length')
+        T_tail_length = len(regex_match_for_R1.group('additional_bases')) - 1
+        additional_bases = regex_match_for_R1.group('additional_bases')
+        ref_name_R5 = regex_match_for_R1.group('ref')
+        ref_name_R3 = regex_match_for_R2.group('ref')
         additional_bases = re.sub(r'\s', '', additional_bases)
         tailseq_tail_length = int(A_tail_length) + T_tail_length
-        PCRduplicates = m1.group('PCRduplicates')
+        PCRduplicates = regex_match_for_R1.group('PCRduplicates')
 
-        R5_mapping_pos = m1.group('pos')
-        R3_mapping_pos = m2.group('pos')
+        R5_mapping_pos = regex_match_for_R1.group('pos')
+        R3_mapping_pos = regex_match_for_R2.group('pos')
 
         # if R5 read sequence is composed only of A - discard
         if (re.search(regex_for_A_only_in_seq, str(R5_seq))):
@@ -353,9 +356,9 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
             if (tailseq_tail_length > 0):
                 # if tailseq identified tail is > 0 bp
                 # treat this as a true tail but try to find this tails in the softclipping
-                if (m1.group('pos') != "-1"):  # mapping of R5 read
+                if (regex_match_for_R1.group('pos') != "-1"):  # mapping of R5 read
                     # -1 means that read was unmapped
-                    if (m2.group('pos') != "-1"):  # mapping of R3 read
+                    if (regex_match_for_R2.group('pos') != "-1"):  # mapping of R3 read
                         # paired mapping - best situation
                         tails_results[seq_id]['mapping'] = 'both'
                         if (clip3_R5_length == clip3_R3_length):
@@ -475,7 +478,7 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
 
                 else:
                     # R5 read was unmapped:
-                    if (m2.group('pos') != "-1"):  # mapping of R3 read
+                    if (regex_match_for_R2.group('pos') != "-1"):  # mapping of R3 read
                         if (tailseq_tail_length == clip3_R3_length):
                             # if tailseq-identified tails has the same length as sequence clipped from the 3' end of read R5:
                             tails_results[seq_id]['tailseq_tail_match_clipped_tail'] = 1
@@ -506,9 +509,9 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
                 # tailseq tail not found
                 # have to identify tails based on clipping only
                 # process mapped reads:
-                if (m1.group('pos') != "-1"):  # mapping of R5 read
+                if (regex_match_for_R1.group('pos') != "-1"):  # mapping of R5 read
                     # -1 means that read was unmapped
-                    if (m2.group('pos') != "-1"):  # mapping of R3 read
+                    if (regex_match_for_R2.group('pos') != "-1"):  # mapping of R3 read
                         # paired mapping - best situation
                         tails_results[seq_id]['mapping'] = 'both'
                         if (clip3_R5_length == clip3_R3_length):
@@ -579,7 +582,7 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
 
                 else:
                     # if R5 was unmapped, check if R3 was mapped:
-                    if (m2.group('pos') != "-1"):
+                    if (regex_match_for_R2.group('pos') != "-1"):
                         # use heuristics (regex matching) to identify possible tail
                         tail_match = re.match(
                             regex_for_heuristic_tail_identification_R3, str(clipped_R3))
@@ -922,10 +925,10 @@ for R5_file in glob.glob(files_to_search):
                     print("softclipping output file " + softclipped_fasta_R3 +
                           " exists but is zero-size. Will attempt to rerun the analysis.")
                     subprocess.call(get_sofclipped_script_path + " -input " +
-                                    SAM_file_R3 + " -output " + softclipped_fasta_R3, shell=True)
+                                    SAM_file_R3 + " -output " + softclipped_fasta_R3 + " -R3 1", shell=True)
             else:
                 subprocess.call(get_sofclipped_script_path + " -input " +
-                                SAM_file_R3 + " -output " + softclipped_fasta_R3, shell=True)
+                                SAM_file_R3 + " -output " + softclipped_fasta_R3 + " -R3 1", shell=True)
         else:
             print(
                 "Skipping bowtie part because genomic LINE sequences are processed using RepeatMasker")
@@ -936,6 +939,7 @@ for R5_file in glob.glob(files_to_search):
         # Create pandas data frame with result
         tails_df = pd.DataFrame.from_dict(paired_results, orient='index')
         # make sure data are saved after each library processed:
+        print("Saving data for sample " + sample_name)
         if (analyzed > 1):
             tails_df.to_csv(args.output, mode='a', sep='\t', header=False)
         else:

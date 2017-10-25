@@ -23,10 +23,11 @@ library(data.table)
 library(ggplot2)
 library(plyr)
 library(dplyr)
+library(ggseqlogo)
+#library(ggseqlogo)
 
 
-
-melt_data_localization <- "/home/smaegol/storage/analyses/tail_seq_3/new/LINE_1_RACE_seq_analysis/flowcell2/fastq/processing_out_sabre/test.tsv"
+melt_data_localization <- "/home/smaegol/storage/analyses/tail_seq_3/new/LINE_1_RACE_seq_analysis/flowcell2/fastq/processing_out_sabre/test_nowy.tsv"
 
 # read tailing information to data.frame using data.table
 tails_data_melt <- fread(melt_data_localization, sep = "\t", header = T, stringsAsFactors = T,
@@ -50,7 +51,11 @@ tails_data_mapped$ref_name_R3 <- as.character(tails_data_mapped$ref_name_R3)
 tails_data_mapped$uridylated <- FALSE
 tails_data_mapped[tails_data_mapped$Utail_length > 0, ]$uridylated = TRUE
 
-# in fither analyses use only those read which got CTGAC delimiter identified in
+#convert T to U in terminal nucleotides (for seqlogo)
+tails_data_mapped$terminal_nucleotides<-as.character(tails_data_mapped$terminal_nucleotides)
+tails_data_mapped$terminal_nucleotides<-gsub("T","U",tails_data_mapped$terminal_nucleotides)
+
+# in further analyses use only those read which got CTGAC delimiter identified in
 # the clipped fragment
 tails_data_mapped_true <- tails_data_mapped[tails_data_mapped$CTGAC_R5 > 0, ]
 tails_data_mapped_true$ref_name = tails_data_mapped_true$ref_name_R5  #use ref_name_R5 as ref_name
@@ -179,7 +184,36 @@ plot_tail_lengths <- ggplot(summary_tail_lengths_table, aes(x = as.factor(cell_l
 print(plot_tail_lengths)
 dev.off()
 
-getwd()
 
+#prepare data for seqlogo
+tails_data_mapped_PA1<-tails_data_mapped[tails_data_mapped$cell_line=='PA1',]
+tails_data_mapped_PA1$condition<-as.character(tails_data_mapped_PA1$condition)
+tails_data_mapped_PA1$condition<-as.factor(tails_data_mapped_PA1$condition)
 
-head(tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD)
+tails_data_mapped_293<-tails_data_mapped[tails_data_mapped$cell_line=='293T',]
+tails_data_mapped_293$condition<-as.character(tails_data_mapped_293$condition)
+tails_data_mapped_293$condition<-as.factor(tails_data_mapped_293$condition)
+
+tails_data_mapped_PA1_ENDOL1<-tails_data_mapped_PA1[tails_data_mapped_PA1$primer_name=='L1NGS0',]
+tails_data_mapped_PA1_ENDOL1$condition<-as.character(tails_data_mapped_PA1_ENDOL1$condition)
+tails_data_mapped_PA1_ENDOL1$condition<-as.factor(tails_data_mapped_PA1_ENDOL1$condition)
+
+for (cond in levels(tails_data_mapped_PA1_ENDOL1$condition)) {
+  print(cond)
+  terminal_nucleotides_cond_name=paste("terminal_nucleotides",cond,sep="_")
+  #temp2=eval(as.symbol(summary_tail_lengths_table_name))
+  assign(terminal_nucleotides_cond_name,tails_data_mapped_PA1_ENDOL1[tails_data_mapped_PA1_ENDOL1$condition==cond,]$terminal_nucleotides)
+}
+
+terminal_nucleotides_knockdown=list(si_ctrl=terminal_nucleotides_CNTRLSIRNA,si_TUT=terminal_nucleotides_TUTSIRNA,si_MOV10C=terminal_nucleotides_MOV10SIRNAC)
+
+pdf("seqlogo_ENDOL1_PA1_L1NGS0_knockdown_window7.pdf")
+print(ggseqlogo(terminal_nucleotides_knockdown,ncol=2,method='prob'))
+print(ggseqlogo(terminal_nucleotides_knockdown,ncol=2,method='bits'))
+dev.off()
+
+#head(terminal_nucleotides_NT)
+
+print(ggseqlogo(terminal_nucleotides_NT,ncol=2,method='bits'))
+
+ls()

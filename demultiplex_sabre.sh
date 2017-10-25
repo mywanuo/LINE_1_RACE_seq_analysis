@@ -30,7 +30,14 @@ input_dir=$1
 out_dir='processing_out_sabre'
 #nmae of barcode files
 
+# check if required software is accessible (in the PATH)
+if ! [ -x "$(command -v $sabre_script)" ]; then
+  echo 'Error: Sabre is not accessible.' >&2
+  exit 1
+fi
+
 mkdir $out_dir
+
 
 for R5_file in `find $input_dir -name '*R5.fastq'`
 do

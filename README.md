@@ -91,9 +91,9 @@
    ./analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
   ```
 
-6. **Statistical analysis, plots**
+5. **Statistical analysis, plots**
 
-  Further analysis is done using R scripts.
+  Further analysis is done using provided R scripts.
 
 ## How to get LINE-specific repeatmasker library
 

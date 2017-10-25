@@ -21,17 +21,16 @@
 
 import argparse
 # parse command line arguments
-parser = argparse.ArgumentParser(description='analyze pairs')
+
+parser = argparse.ArgumentParser(
+    description='Analyze repatmasker output file - identify soft clipped fragments (R3 reads)')
 
 parser.add_argument('--input', dest='inputfile', action='store',
-                    help='Input file(required)', required=True)
+                    help='Input file from Parsing-RepeatMasker-Outputs/parseRM.pl (required)', required=True)
 parser.add_argument('--fasta', dest='fastafile', action='store',
-                    help='Fasta file(required)', required=True)
+                    help='Fasta file with sequences provided as an input for repeatmasker (required)', required=True)
 parser.add_argument('--output', dest='output', action='store',
                     help='Output tsv file (required)', required=True)
-parser.add_argument('--glob', dest='glob', action='store',
-                    help='Custom glob for files to analyze', required=False)
-
 args = parser.parse_args()
 
 from Bio import SeqIO
@@ -83,6 +82,20 @@ for row in data.itertuples():
             str(LINE_end_in_ref) + "\tref: " + str(LINE_name)
         processed_seq = SeqRecord(
             Seq(str(LINE_seq)), id=whole_seq_id, description=str(seq_descr))
+        seq_records.append(processed_seq)
+
+
+#include sequences for which LINE sequences were not found
+for record in SeqIO.parse(args.fastafile, "fasta"):
+    seq_id = record.id  # get id of read
+    if (seq_name in seq_names):
+        next
+    else:
+        whole_seq = record.seq
+        clip_seq = str(clip_seq_obj.reverse_complement())
+        seq_descr = "\tclip5: \tclip3: \tpos: -1\tref: -1"
+        processed_seq = SeqRecord(
+            Seq(str(clip_seq)), id=seq_id, description=str(seq_descr))
         seq_records.append(processed_seq)
 
 
