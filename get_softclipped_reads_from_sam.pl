@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 #######################################################################################
 ###																					###
@@ -20,6 +20,7 @@
 #######################################################################################
 
 
+
 #load required libraries
 use strict;
 #use warnings;
@@ -30,10 +31,10 @@ use Bio::SeqIO;
 use Bio::Seq::Quality;
 use Term::ProgressBar 2.00;
 
-my $current_dir = `pwd`; 
+my $current_dir = `pwd`;
 
 print $current_dir; #print current dir
- 
+
 my $input_SAM = '';
 my $output_file = '';
 
@@ -54,7 +55,7 @@ get_softclipped_reads_with_ref($input_SAM,$output_file);
 
 
 
-### SUBROUTINES ### 
+### SUBROUTINES ###
 
 sub get_softclipped_reads_with_ref {
 #get mapping positions of mapped reads - find where transcript ends in RACE sequencing
@@ -63,9 +64,9 @@ sub get_softclipped_reads_with_ref {
 	my $input_sam_file = shift; #sam file with mappings
 	my $output_fastq_file = shift; #sam file with mappings
 	my $input_fastq_file = shift;
-	
+
 	print "sam: $input_sam_file\n\n";
-	
+
 	#parameters read from SAM file
 	my $query_name;
 	my $bit_flag;
@@ -100,11 +101,11 @@ sub get_softclipped_reads_with_ref {
 				my $read_seq = $read->seq; #get actual sequence
 				my $read_qual = $read->qual;
 				my $read_id = $read->id;
-				my $readdesc = $read->desc; 
+				my $readdesc = $read->desc;
 				$reads_descriptions{$read_id}=$readdesc;
 		}
 	}
-		
+
 	#create fasta for output files
 	my $sequences_out = Bio::SeqIO->new(
 							-file   => ">$output_fastq_file",
@@ -129,7 +130,7 @@ sub get_softclipped_reads_with_ref {
 
 			if ($ref_name ne '*') { #if read was mapped - get position of mapping
 				my $seq_length = length($seq); #get length of mapped read
-				if ($cigar=="*") { 
+				if ($cigar=="*") {
 				#if no clipping occured:
 					my $readdesc = $reads_descriptions{$query_name};
 					$readdesc.="\tclip5: \tclip3: \tpos: -1\tref: -1";
@@ -140,7 +141,7 @@ sub get_softclipped_reads_with_ref {
 					$sequences_out->write_seq($seq_obj_out);
 				}
 				else {
-				#get sequence parts from CIGAR:					
+				#get sequence parts from CIGAR:
 					my @cigar = ($cigar =~ m/(\d+\D)/g);
 					my $nocigars = scalar @cigar; # get number of cigar operations
 					my $cum_length = 0;
@@ -157,7 +158,7 @@ sub get_softclipped_reads_with_ref {
 						for (my $z=0;$z<$nocigars;$z++){
 							$cig = $cigar[$z];
 							my ($cig_length,$cig_type) = ($cig =~ m/(\d+)(\D)/);
-							
+
 							if ($z==0) {
 								#get first CIGAR operation - if S (softclipping) - output as 5'-clipping
 								if ($cig_type eq "S") {
@@ -176,9 +177,9 @@ sub get_softclipped_reads_with_ref {
 							$cum_length+=$cig_length;
 						}
 						$matched_read=substr($seq,$match_start,$match_end); #get matched read (without clipped parts)
-						
+
 					}
-					my $mapping_pos = $pos + $match_end - 1; #get mapping position 
+					my $mapping_pos = $pos + $match_end - 1; #get mapping position
 					($positions{$mapping_pos}) and ($positions{$mapping_pos}++) or ($positions{$mapping_pos}=1);
 					if ($clip3) {
 						($positions_tails{$mapping_pos}) and ($positions_tails{$mapping_pos}++) or ($positions_tails{$mapping_pos}=1);
@@ -205,11 +206,11 @@ sub get_softclipped_reads_with_ref {
 									-id => $query_name,
 									-desc => $readdesc);
 				$sequences_out->write_seq($seq_obj_out);
-				
+
 			}
 		} #end if
-		
-		
+
+
 		#manage progress bar
 		$next_update = $progress->update($i)
 		if $i >= $next_update;
@@ -237,6 +238,3 @@ sub get_softclipped_reads_with_ref {
 
 
 exit;
-
-
-
