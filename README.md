@@ -96,7 +96,7 @@
 
 5. **Statistical analysis, plots**
 
-  Further analysis is done using provided R scripts.
+  Further analysis is done using provided R scripts. Computations may require around 4GB or RAM memory.
 
 ## How to get LINE-specific repeatmasker library
 
