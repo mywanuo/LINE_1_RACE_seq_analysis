@@ -34,6 +34,8 @@ get_sofclipped_script_path = script_path + "/get_softclipped_reads_from_sam.pl"
 identify_LINEs_script_path = script_path + "/identify_LINE_repeatmasker.py"
 transcript_genomes = {'GAPDH': script_path + '/indexes/GAPDH_noA',
                       #'ENDOL1' : '/home/smaegol/storage/analyses/tail_seq_3/genome/ENDOL1/ENDOL1_merged_references_with_reporter',
+                    #   'REPORTERL1': script_path + '/new_gen/reporter_si_short',
+                    #   'REPORTERL1_overexp': script_path + '/new_gen/reporter_overexp_short',
                       'REPORTERL1': script_path + '/indexes/reporter_L1_sirna',
                       'REPORTERL1_overexp': script_path + '/indexes/reporter_L1_overexp',
                       }
@@ -60,7 +62,7 @@ parser.add_argument('--glob', dest='glob', action='store',
 parser.add_argument('--samplesheet', dest='samplesheet', action='store',
                     help='Alternative samplesheet (optional)', required=False)
 parser.add_argument('--window', dest='window', action='store',
-                    help='Window size [nucleotides] for 3prime end nucleotides analysis (optional, default = 7)', required=False, default=7)
+                    help='Window size [nucleotides] for 3prime end terminal nucleotides analysis (optional, default = 7)', required=False, default=7)
 
 args = parser.parse_args()
 
@@ -80,23 +82,22 @@ data = pd.DataFrame.from_csv(samplesheet_location, sep='\t')
 
 
 def get_3end_nucleotides(sequence, window_size):
-
+    """Analyze terminal nucleotides."""
     terminal_nucleotides = sequence[-int(window_size):]
     return(terminal_nucleotides)
 
-#main processing function
-# takes localization of softclipped fasta and description of different features of samples (provided in the samplesheet)
-
 
 def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, condition, cell_line, primer_name, person):
+    """Main processing function.
 
-    # for L1 sequences - use repeatmasker files
-    if((transcript == 'ENDOL1') or (transcript == 'REPORTERL1')):
-        R2_fastq_name = r"
-        R2_fastq =  SeqIO.index(R2, "fastq")
+    Takes localization of softclipped fasta and description of different features of samples (provided in the samplesheet)
+    Returns dict with data concerning all sequences analyzed.
+    Output contains tails sequences, lengths and classification
+    """
+    # for L1 genomic sequences - use repeatmasker files
+    if((transcript == 'ENDOL1')):
         R1 = R1 + '.rmasker.fasta'
         R2 = R2 + '.rmasker.fasta'
-
 
     # index R2 (R3 - tailseeker output) reads
     R2_reads = SeqIO.index(R2, "fasta")
@@ -121,6 +122,7 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
         # create dict for storing temp results for pair
         tails_results[seq_id] = {}
         tails_results[seq_id]['CTGAC_R5'] = 0  # set the initial value to 0
+
         tails_results[seq_id]['heterogenous_end'] = ''
         tails_results[seq_id]['heterogenous_end_R3'] = ''
         # create dict for storing final results for pair
@@ -525,7 +527,11 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
                                 else:
                                     # if not CTGAC was identified - store the possible tail sequence (but it will not be used in further analysis)
                                     tails_results[seq_id]['tail_source'] = 'no_tailseq_clip_R5_R3'
-                                    tails_results[seq_id]['tail_sequence'] = clipped_R5
+                                    #for reporter (short) reads - take R3 sequence (as even those which dont have CTGAC in R5 will be treated as possible tails)
+                                    if ((transcript=="REPORTERL1") or (transcript=="REPORTERL1_overexp")):
+                                        tails_results[seq_id]['tail_sequence'] = clipped_R3
+                                    else:
+                                        tails_results[seq_id]['tail_sequence'] = clipped_R5
                                     tails_results[seq_id]['mapping_position'] = R5_mapping_pos
                             else:
                                 # softclipping fragment got 0 length - treat as no_tail
@@ -557,7 +563,11 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
                                 # if not CTGAC was identified - store the possible tail sequence (but it will not be used in further analysis)
                                 tails_results[seq_id]['mapping_position'] = R5_mapping_pos
                                 tails_results[seq_id]['tail_source'] = 'no_tailseq_clip_clipping_different_lengths_R5'
-                                tails_results[seq_id]['tail_sequence'] = clipped_R5
+                                #for reporter (short) reads - take R3 sequence (as even those which dont have CTGAC in R5 will be treated as possible tails)
+                                if ((transcript=="REPORTERL1") or (transcript=="REPORTERL1_overexp")):
+                                    tails_results[seq_id]['tail_sequence'] = clipped_R3
+                                else:
+                                    tails_results[seq_id]['tail_sequence'] = clipped_R5
 
                     else:
                         # no R3 read was mapped, try to find tail in R5 read
@@ -602,6 +612,11 @@ def analyze_tails(R1, R2, transcript, sample_name, localization, replicate, cond
                         tails_results[seq_id]['tail_source'] = 'no_tailseq_no_mapping'
                         tails_results[seq_id]['tail_sequence'] = ''
                         tails_results[seq_id]['mapping_position'] = -1
+
+        #for reporter sequences (which got short reads for R5 and CTGAC presence is not expected)
+        #for compatibility with genomic sequences treat all as containing CTGAC
+        if ((transcript == "REPORTERL1") or (transcript == "REPORTERL1_overexp")):
+            tails_results[seq_id]['CTGAC_R5']=1
 
         # perform final processing of tail data
         tail_sequence = tails_results[seq_id]['tail_sequence']
@@ -886,10 +901,10 @@ for R5_file in glob.glob(files_to_search):
                     print("bowtie output file " + SAM_file_R5 +
                           " exists but is zero-size. Will attempt to rerun the mapping.")
                     subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 +
-                                    " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
+                                    " --very-sensitive-local -L 25 -D 10 -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
             else:
                 subprocess.call(bowtie2_path + " -x " + genome + " -U " + R5_file + " -S " + SAM_file_R5 +
-                                " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
+                                " --very-sensitive-local -L 25 -D 10 -p " + bowtie_threads + " 2> " + bowtie_output_R5, shell=True)
             if os.path.isfile(SAM_file_R3):
                 if os.stat(SAM_file_R3).st_size > 0:
                     print("bowtie output " + SAM_file_R3 +
@@ -899,10 +914,10 @@ for R5_file in glob.glob(files_to_search):
                     print("bowtie output file " + SAM_file_R3 +
                           " exists but is zero-size. Will attempt to rerun the mapping.")
                     subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 +
-                                    " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
+                                    " --very-sensitive-local -L 25 -D 10 -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
             else:
                 subprocess.call(bowtie2_path + " -x " + genome + " -U " + R3_file + " -S " + SAM_file_R3 +
-                                " --very-sensitive-local -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
+                                " --very-sensitive-local -L 25 -D 10 -p " + bowtie_threads + " 2> " + bowtie_output_R3, shell=True)
 
             # if softclipping output does not exist or R5 and R3 reads - perform identification of soft clipped fragments:
             if os.path.isfile(softclipped_fasta_R5):

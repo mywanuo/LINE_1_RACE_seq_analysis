@@ -12,11 +12,11 @@
 
 ## Requirements
 
-- tailseeker (<https://github.com/hyeshik/tailseeker>)
-- repeatmasker (<http://www.repeatmasker.org/>) with the repbase libraries downloaded and installed (<http://www.girinst.org/server/RepBase/index.php>)
-- Parsing-RepeatMasker-Outputs scripts downloaded (<https://github.com/4ureliek/Parsing-RepeatMasker-Outputs>)
-- fastx toolkit (<http://hannonlab.cshl.edu/fastx_toolkit/>)
-- bowtie2 (<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>)
+- [tailseeker](https://github.com/hyeshik/tailseeker)
+- [repeatmasker](http://www.repeatmasker.org/) with the [repbase libraries](http://www.girinst.org/server/RepBase/index.php) downloaded and installed
+- [Parsing-RepeatMasker-Outputs](https://github.com/4ureliek/Parsing-RepeatMasker-Outputs) scripts downloaded
+- [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/)
+- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
 - Python 3
 - Python libraries installed:
 
@@ -36,6 +36,7 @@
   - ggplot2
   - plyr
   - dplyr
+  - [ggseqlogo](https://github.com/omarwagih/ggseqlogo)
 
 ## Detailed procedure
 
@@ -80,6 +81,8 @@
     Analysis is run on the all files with names ending with `_R5.fastq` in the folder specified with the `--inputdir` option. More specific selection can be done with the `--glob` option of the analysis script.
 
     For the all analyzed files a samplesheet is required, which contains all information regarding the samples, including experimental conditions, primer used, transcript, etc. This file must be prepared before the analysis. Example is located in the `flowcell2` folder (`samplesheet.csv`). Default path to the samplesheet is provided in the script, but the alternative one can be provided with the `--samplesheet` option.
+
+    Script performs also calculation of the terminal nucleotides composition (used for the generation of sequence logos). To change the default sequence window used for calculation (7 nt) one can use the `--window` option
 
     As the output (specified with the `--output` option) a tsv file is generated, containing tailing information for each sequence analysed, as well as additional data regarding the procedure.
 

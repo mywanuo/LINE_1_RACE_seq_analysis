@@ -56,6 +56,7 @@ do
   echo "Processing file: $f "
   FILENAME_PREFIX=`expr match "$f" '\(.*\)R5'`
   FILENAME_SUFFIX=`expr match "$f" '.*R5\(.*\)'`
+  PRIMER=`expr match "$FILENAME_PREFIX" '..\(....\).*'`
   fasta=$FILENAME_PREFIX"R5.fasta"
   rmasker_out=$fasta".out"
   rmasker_parsed=$rmasker_out".parsed1/"$rmasker_out".length.tab"
@@ -70,7 +71,11 @@ do
   if ! [ -f "$rmasker_out" ]; then
     #run repeatmasker using specified library
     echo "Running repeatmasker on input fasta file"
-    $repeat_masker -lib $lib_location -div $max_divergence -u -source -xsmall -norna -nolow -qq -pa $threads $fasta
+    if [ "$PRIMER" == 'L1MM' ]; then
+      $repeat_masker -div $max_divergence -species mouse -u -source -xsmall -norna -nolow -qq -pa $threads $fasta
+    else
+      $repeat_masker -lib $lib_location -div $max_divergence -u -source -xsmall -norna -nolow -qq -pa $threads $fasta
+    fi
   fi
   #parse repeatmasker output using ParseRM_simple.pl from Parsing-RepeatMasker-Outputs
   echo "Parsing repeatmasker output"
@@ -97,7 +102,11 @@ do
   if ! [ -f "$rmasker_out_R3" ]; then
     #run repeatmasker using specified library
     echo "Running repeatmasker on input fasta file"
-    $repeat_masker -lib $lib_location -div $max_divergence -u -source -xsmall -norna -nolow -qq -pa $threads $fasta_R3
+    if [ "$PRIMER" == 'L1MM' ]; then
+      $repeat_masker -div $max_divergence -species mouse -u -source -xsmall -norna -nolow -qq -pa $threads $fasta_R3
+    else
+      $repeat_masker -lib $lib_location -div $max_divergence -u -source -xsmall -norna -nolow -qq -pa $threads $fasta_R3
+    fi
   fi
   #parse repeatmasker output using ParseRM_simple.pl from Parsing-RepeatMasker-Outputs
   echo "Parsing repeatmasker output"
