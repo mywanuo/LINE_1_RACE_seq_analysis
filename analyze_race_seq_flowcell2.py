@@ -33,9 +33,6 @@ bowtie_threads = '10'
 get_sofclipped_script_path = script_path + "/get_softclipped_reads_from_sam.pl"
 identify_LINEs_script_path = script_path + "/identify_LINE_repeatmasker.py"
 transcript_genomes = {'GAPDH': script_path + '/indexes/GAPDH_noA',
-                      #'ENDOL1' : '/home/smaegol/storage/analyses/tail_seq_3/genome/ENDOL1/ENDOL1_merged_references_with_reporter',
-                    #   'REPORTERL1': script_path + '/new_gen/reporter_si_short',
-                    #   'REPORTERL1_overexp': script_path + '/new_gen/reporter_overexp_short',
                       'REPORTERL1': script_path + '/indexes/reporter_L1_sirna',
                       'REPORTERL1_overexp': script_path + '/indexes/reporter_L1_overexp',
                       }
