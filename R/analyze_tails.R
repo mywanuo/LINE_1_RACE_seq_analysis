@@ -39,8 +39,6 @@ tails_data_melt$tailed <- tails_data_melt$tail_length > 0  #mark tailed reads
 tails_data_melt$mapped <- tails_data_melt$mapping_position != -1  #mark mapped reads
 tails_data_mapped <- tails_data_melt[tails_data_melt$mapped != 0, ]  #discard unmapped reads
 
-#head(tails_data_mapped$transcript)
-
 # fix of flase_no_tail - should be assigned no tail cause CTGAC was found in the
 # clipped fragment - to be fixed in python script
 tails_data_mapped$tail_type <- as.character(tails_data_mapped$tail_type)
@@ -201,6 +199,18 @@ summarize_Utails_calculate_means <- function(tail_data2) {
 }
 
 
+summarize_Atails_calculate_means <- function(tail_data2) {
+    # function summarizing Atail length data for given dataset
+    tail_data <- tail_data2
+    tail_data_summarized <- ddply(tail_data, .(transcript, condition, cell_line,
+        primer_name), summarise, N = length(Atail_length), mean_Atail = mean(Atail_length,
+        na.rm = T), sd_Atail = sd(Atail_length))
+    tail_data_summarized <- ddply(tail_data_summarized, .(transcript, condition,
+        cell_line, primer_name), transform, se_Atail = sd_Atail/sqrt(N))
+    return(tail_data_summarized)
+}
+
+
 summarize_Utails_lengths <- function(tail_data2) {
     # function summarizing tail length data for given dataset
     tail_data <- tail_data2
@@ -211,67 +221,64 @@ summarize_Utails_lengths <- function(tail_data2) {
     return(tail_data_summarized)
 }
 
+summarize_tails_by_tail_type_collapse_short_relative <- function(tail_data2) {
+  #function summarizing tails based on their length and type
+  tail_data<-tail_data2
+  tail_data$tail_length<-as.numeric(tail_data$tail_length)
+  #calculate maximum possible tail length in given dataset
+  max_tail_length<-summary(tail_data2$tail_length)[6]
+  #bin tails based on their length
+  if (max_tail_length>=60) {
+    tail_data[tail_data$tail_length>=60,]$tail_length<-'60+'
+  }
+  if (max_tail_length>=50) {
+    for (temp_len in seq(50,59,1)) {
+      if(any(tail_data$tail_length==temp_len)) {
+        tail_data[tail_data$tail_length==temp_len,]$tail_length<-'50-59'
 
+      }
+    }
+  }
+  if (max_tail_length>=40) {
+    for (temp_len in seq(40,49,1)) {
+      if(any(tail_data$tail_length==temp_len)) {
+        tail_data[tail_data$tail_length==temp_len,]$tail_length<-'40-49'
+      }
+    }
+  }
+  if (max_tail_length>=30) {
+    for (temp_len in seq(30,39,1)) {
+      if(any(tail_data$tail_length==temp_len)) {
+        tail_data[tail_data$tail_length==temp_len,]$tail_length<-'30-39'
+      }
+    }
+  }
+  if (max_tail_length>=20) {
+    for (temp_len in seq(20,29,1)) {
+      if(any(tail_data$tail_length==temp_len)) {
+        tail_data[tail_data$tail_length==temp_len,]$tail_length<-'20-29'
+      }
+    }
+  }
+  for (temp_len in seq(10,19,1)) {
+    if(any(tail_data$tail_length==temp_len)) {
+      tail_data[tail_data$tail_length==temp_len,]$tail_length<-'10-19'
+    }
+  }
 
-summarize_tails_by_tail_type_collapse_short <- function(tail_data2) {
-    # function summarizing tail length data for given dataset
-    tail_data <- tail_data2
-    tail_data$tail_length <- as.numeric(tail_data$tail_length)
-    max_tail_length <- summary(tail_data2$tail_length)[6]
-    print(max_tail_length)
-    if (max_tail_length >= 60) {
-        tail_data[tail_data$tail_length >= 60, ]$tail_length <- "60+"
+  for (temp_len in seq(1,9,1)) {
+    if(any(tail_data$tail_length==temp_len)) {
+      tail_data[tail_data$tail_length==temp_len,]$tail_length<-'1-9'
     }
-    if (max_tail_length >= 50) {
-        for (temp_len in seq(50, 59, 1)) {
-            if (any(tail_data$tail_length == temp_len)) {
-                tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "50-59"
-            }
-        }
-    }
-    if (max_tail_length >= 40) {
-        for (temp_len in seq(40, 49, 1)) {
-            if (any(tail_data$tail_length == temp_len)) {
-                tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "40-49"
-            }
-        }
-    }
-    if (max_tail_length >= 30) {
-        for (temp_len in seq(30, 39, 1)) {
-            if (any(tail_data$tail_length == temp_len)) {
-                tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "30-39"
-            }
-        }
-    }
-    if (max_tail_length >= 20) {
-        for (temp_len in seq(20, 29, 1)) {
-            if (any(tail_data$tail_length == temp_len)) {
-                tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "20-29"
-            }
-        }
-    }
-    for (temp_len in seq(10, 19, 1)) {
-        if (any(tail_data$tail_length == temp_len)) {
-            tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "10-19"
-        }
-    }
-
-    for (temp_len in seq(1, 9, 1)) {
-        if (any(tail_data$tail_length == temp_len)) {
-            tail_data[tail_data$tail_length == temp_len, ]$tail_length <- "1-9"
-        }
-    }
-    tail_data$tail_length <- as.factor(tail_data$tail_length)
-    tail_data$tail_length <- factor(tail_data$tail_length, levels = c("0", "1-9",
-        "10-19", "20-29", "30-39", "40-49", "50-59", "60+"))
-    tail_data_summarized <- ddply(tail_data, .(transcript, condition, tail_length,
-        cell_line, localization, primer_name, tail_type), summarise, N = length(tail_length))
-    tail_data_summarized <- ddply(tail_data_summarized, .(transcript, condition,
-        cell_line, localization, primer_name), transform, freq = N/sum(N))
-    return(tail_data_summarized)
+  }
+  #reorder tail length factor
+  tail_data$tail_length<-as.factor(tail_data$tail_length)
+  tail_data$tail_length<-factor(tail_data$tail_length,levels=c('0','1-9','10-19','20-29','30-39','40-49','50-59','60+'))
+  #summarize:
+  tail_data_summarized<-ddply(tail_data,.(transcript,condition,tail_length,cell_line,localization,primer_name,tail_type),summarise,N=length(tail_length))
+  tail_data_summarized<-ddply(tail_data_summarized,.(transcript,condition,cell_line,localization,primer_name,tail_length),transform, freq=N/sum(N))
+  return(tail_data_summarized)
 }
-
-
 
 ## FIGURES ##
 
@@ -314,7 +321,7 @@ for (cond in levels(tails_data_mapped_gapdh_overexp_for_terminal$condition)) {
 terminal_nucleotides_gapdh_overexp = list(CTRL = terminal_nucleotides_gapdh_overexp_CNTRL,
     TUT7WT = terminal_nucleotides_gapdh_overexp_TUT7WT, MOV10 = terminal_nucleotides_gapdh_overexp_MOV10)
 
-setwd("/home/smaegol/")
+
 pdf("fig_4a_reporter.pdf")
 print(ggseqlogo(terminal_nucleotides_reporter_overexp, ncol = 2, method = "prob"))
 dev.off()
@@ -431,20 +438,47 @@ plot_tail_lengths <- ggplot(summary_Utail_lengths_table, aes(x = as.factor(condi
 print(plot_tail_lengths)
 dev.off()
 
-pdf("fig_S5C-G")
+
+pdf("fig_S5C-G.pdf")
 for (transcript in c("ENDOL1")) {
     for (cell_line in c("H9", "HELAHA", "293T", "NPC", "PA1")) {
         summary_tail_lengths_table_name <- paste("_summarized_tails_lengths_by_type")
-        assign(summary_tail_lengths_table_name, summarize_tails_by_tail_type_collapse_short(tails_data_mapped_true_no_hetero_no_other_tails_NT1[tails_data_mapped_true_no_hetero_no_other_tails_NT1$transcript ==
+        assign(summary_tail_lengths_table_name, summarize_tails_by_tail_type_collapse_short_relative(tails_data_mapped_true_no_hetero_no_other_tails_NT1[tails_data_mapped_true_no_hetero_no_other_tails_NT1$transcript ==
             transcript & tails_data_mapped_true_no_hetero_no_other_tails_NT1$cell_line ==
             cell_line & tails_data_mapped_true_no_hetero_no_other_tails_NT1$primer_name ==
-            "L1NGS0", ]))
+            "L1NGS0" & tails_data_mapped_true_no_hetero_no_other_tails_NT1$tail_length >
+            0, ]))
         summary_tail_lengths_table <- eval(as.symbol(summary_tail_lengths_table_name))
+        summary_tail_lengths_table$tail_type<-as.character(summary_tail_lengths_table$tail_type)
+        summary_tail_lengths_table$tail_type<-factor(summary_tail_lengths_table$tail_type,levels=c("U_only","AU","A_only"))
         plot_tail_lengths <- ggplot(summary_tail_lengths_table, aes(x = as.factor(tail_length),
             fill = tail_type, colours = tail_type)) + geom_bar(aes(y = freq), position = position_stack(),
-            stat = "identity") + scale_y_continuous(labels = percent) + xlab("Atail_length") +
-            ylab("% of 3' ends") + facet_grid(. ~ cell_line) + scale_fill_brewer(palette = "Spectral")
+            stat = "identity") + scale_y_continuous() + xlab("Atail_length") + ylab("% of 3' ends") +
+            facet_grid(. ~ cell_line) + scale_fill_manual(values = brewer.pal(11, "Spectral")[c(2,4,10)])
         print(plot_tail_lengths)
     }
 }
+dev.off()
+
+
+
+pdf("fig_S5I.pdf")
+for (condition in c("CNTRLKD", "TUT4TUT7KD", "MOV10KD")) {
+    summary_tail_lengths_table_name <- paste("_summarized_tails_lengths_by_type")
+    assign(summary_tail_lengths_table_name, summarize_tails_by_tail_type_collapse_short_relative(tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD[tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD$condition ==
+        condition & tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD$primer_name ==
+        "L1NGS0" & tails_data_mapped_true_no_hetero_no_other_PA1_tails_KD$tail_length >
+        0, ]))
+    summary_tail_lengths_table <- eval(as.symbol(summary_tail_lengths_table_name))
+    summary_tail_lengths_table$tail_type <- as.character(summary_tail_lengths_table$tail_type)
+    summary_tail_lengths_table$tail_type <- factor(summary_tail_lengths_table$tail_type,
+        levels = c("U_only", "AU", "A_only"))
+    plot_tail_lengths <- ggplot(summary_tail_lengths_table, aes(x = as.factor(tail_length),
+        fill = tail_type, colours = tail_type)) + geom_bar(aes(y = freq), position = position_stack(),
+        stat = "identity") + scale_y_continuous() + xlab("Atail_length") + ylab("% of 3' ends") +
+        facet_grid(. ~ condition) + scale_fill_manual(values = brewer.pal(11, "Spectral")[c(2,
+        4, 10)])
+    print(plot_tail_lengths)
+}
+
 dev.off()
