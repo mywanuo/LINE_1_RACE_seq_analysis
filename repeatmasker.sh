@@ -51,7 +51,7 @@ fi
 
 #find sequence files in the currect folder based on name (for LINE RACE seqs - begin with L1)
 #we start processing with R5 files
-for f in `find . -name "L1*R5.fastq"`
+for f in `find . -name "L1*ENDO**R5.fastq"`
 do
   echo "Processing file: $f "
   FILENAME_PREFIX=`expr match "$f" '\(.*\)R5'`
