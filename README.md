@@ -6,8 +6,7 @@
 - if required - perform additional demultiplexing based on primer sequences (we used modified [sabre](https://github.com/najoshi/sabre) for this purpose, available as a fork at <https://github.com/smaegol/sabre>)
 - create samplesheet describing files to be analyzed, and they important features
 - for LINE sequences (or other repetitive elements) identification run repeatmasker using `repeatmasker.sh` script (may take a long time)
-- run `analyze_race_seq_flowcell2` script to get tails analysis done
-- run `analyze_terminal_nucleotides.py` to analyze 3'-terminome
+- run `analyze_race_seq.py` script to get tails analysis done
 - perform additional analyzes in R using attached scripts
 
 ## Requirements
@@ -91,7 +90,7 @@
     Analysis for the flowcell2 can be run using:
 
   ```
-   ./analyze_race_seq_flowcell2.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
+   ./analyze_race_seq.py --inputdir processing_out_sabre/ --output flowcell2_output.tsv
   ```
 
 5. **Statistical analysis, plots**
