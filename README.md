@@ -47,7 +47,7 @@
    tseek -j
   ```
 
-2. **Demultiplexing (only for flowcell2)**
+2. **Demultiplexing (only for Seq2-5)**
 
     Demultiplexing is done using [sabre](https://github.com/najoshi/sabre). The code of sabre was modified to include primer sequences in the output (apropriate [pull request](https://github.com/najoshi/sabre/pull/8) sent to the sabre developer).
 
@@ -95,7 +95,7 @@
 
 5. **Statistical analysis, plots**
 
-  Further analysis is done using provided R scripts. Computations may require around 4GB or RAM memory.
+  Further analysis is done using provided R scripts. Computations may require around 20GB or RAM memory. Functions used to import and filter data and calculate various parameters (mostly the uridylation level) are located in the `R/raceseq.R` file
 
 ## How to get LINE-specific repeatmasker library
 
