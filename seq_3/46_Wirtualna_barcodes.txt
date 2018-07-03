@@ -1,0 +1,1 @@
+CCAGCATGGCACATGTATAC	processing_out_sabre/236_H9_NT_ENDOL1_1_R5.fastq	processing_out_sabre/236_H9_NT_ENDOL1_1_R3.fastq

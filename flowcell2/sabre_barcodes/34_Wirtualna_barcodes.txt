@@ -1,1 +1,0 @@
-CTAGGGAGCCGCACCTTGT	processing_out_sabre/GAPDH_143_293T_TUT7MUT_GAPDH_1_R5.fastq	processing_out_sabre/GAPDH_143_293T_TUT7MUT_GAPDH_1_R3.fastq

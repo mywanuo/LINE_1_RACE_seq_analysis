@@ -1,0 +1,1 @@
+GCAATGTGCACATGTACCCTAA	processing_out_sabre/36_FLPIN_OVR_TUT1_REPL1_1_R5.fastq	processing_out_sabre/36_FLPIN_OVR_TUT1_REPL1_1_R3.fastq

@@ -1,3 +1,0 @@
-CCAGCATGGCACATGTATAC	processing_out_sabre/L1NGS0_247_HEK_293T_ENDOL1_1_R5.fastq	processing_out_sabre/L1NGS0_247_HEK_293T_ENDOL1_1_R3.fastq
-CTAGGGAGCCGCACCTTGT	processing_out_sabre/GAPDH_284_HEK_293T_GAPDH_1_R5.fastq	processing_out_sabre/GAPDH_284_HEK_293T_GAPDH_1_R3.fastq
-

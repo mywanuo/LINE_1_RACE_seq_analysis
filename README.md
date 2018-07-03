@@ -96,6 +96,8 @@
 5. **Statistical analysis, plots**
 
   Further analysis is done using provided R scripts. Computations may require around 20GB or RAM memory. Functions used to import and filter data and calculate various parameters (mostly the uridylation level) are located in the `R/raceseq.R` file
+  
+  Note that for the LINE-1 reporter overexpression experiments, reads should be filtered and include only those, which end in the LINE-1 3'-UTR (mapping_position_max = 9010), to exclude plasmid-borne and artifically elongated reads. 
 
 ## How to get LINE-specific repeatmasker library
 

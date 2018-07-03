@@ -1,0 +1,2 @@
+GCAATGTGCACATGTACCCTAA	processing_out_sabre/4_FLPIN_OVR_TENT5CWT_REPL1_1_R5.fastq	processing_out_sabre/4_FLPIN_OVR_TENT5CWT_REPL1_1_R3.fastq
+AGCCCTCCCTACTCTCTTGA	processing_out_sabre/247_MYSZ_GAPDH_1_R5.fastq	processing_out_sabre/247_MYSZ_GAPDH_1_R3.fastq
