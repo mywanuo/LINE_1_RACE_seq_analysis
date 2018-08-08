@@ -1,0 +1,81 @@
+include:
+    - defaults.conf
+
+run_id:         "seq_5"
+
+sources:
+    - id:       a
+      type:     MiSeq-V3
+      dir:      "please specify here"
+      lane:     1
+
+experimental_samples:
+    1_Wirtualna: ATCACG
+    10_Wirtualna: TAGCTT
+    11_Wirtualna: GGCTAC
+    12_Wirtualna: CTTGTA
+    17_Wirtualna: GTAGAG
+    18_Wirtualna: GTCCGC
+    2_Wirtualna: CGATGT
+    25_Wirtualna: ACTGAT
+    26_Wirtualna: ATGAGC
+    27_Wirtualna: ATTCCT
+    29_Wirtualna: CAACTA
+    3_Wirtualna: TTAGGC
+    30_Wirtualna: CACCGG
+    31_Wirtualna: CACGAT
+    32_Wirtualna: CACTCA
+    33_Wirtualna: CAGGCG
+    34_Wirtualna: CATGGC
+    35_Wirtualna: CATTTT
+    36_Wirtualna: CCAACA
+    37_Wirtualna: CGGAAT
+    38_Wirtualna: CTAGCT
+    39_Wirtualna: CTATAC
+    4_Wirtualna: TGACCA
+    40_Wirtualna: CTCAGA
+    41_Wirtualna: GACGAC
+    42_Wirtualna: TAATCG
+    43_Wirtualna: TACAGC
+    44_Wirtualna: TATAAT
+    45_Wirtualna: TCATTC
+    46_Wirtualna: TCCCGA
+    47_Wirtualna: TCGAAG
+    5_Wirtualna: ACAGTG
+    6_Wirtualna: GCCAAT
+    7_Wirtualna: CAGATC
+    8_Wirtualna: ACTTGA
+    9_Wirtualna: GATCAG
+
+
+reference_set:
+    _exp: GRCh38
+
+spikein_samples:
+    spk8: GTGGCC
+    spk16: GTTTCG
+    spk32: CGTACG
+    spk64: GAGTGG
+ 
+spikein_lengths:
+    spk8: 8
+    spk16: 16
+    spk32: 32
+    spk64: 64
+
+read_cycles:
+    R5: [1, 301, 1]
+    Ri: [302, 307, 2]
+    R3: [308, 608, 3]
+
+dupcheck_regions:
+    _exp: [[21, 35], [308, 322]]
+
+analysis_level: 1
+
+performance:
+    enable_gsnap: yes
+
+third_party_basecaller:
+    R5: ''
+

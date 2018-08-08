@@ -1,0 +1,67 @@
+include:
+    - defaults.conf
+
+run_id:         "seq_2"
+
+sources:
+    - id:       a
+      type:     MiSeq-V3
+      dir:      "please specify here"
+      lane:     1
+
+experimental_samples:
+    1_Wirtualna: ATCACG
+    10_Wirtualna: TAGCTT
+    11_Wirtualna: GGCTAC
+    12_Wirtualna: CTTGTA
+    13_Wirtualna: AGTCAA
+    14_Wirtualna: AGTTCC
+    15_Wirtualna: ATGTCA
+    16_Wirtualna: CCGTCC
+    17_Wirtualna: GTAGAG
+    18_Wirtualna: GTCCGC
+    24_Wirtualna: GGTAGC
+    37_Wirtualna: CGGAAT
+    38_Wirtualna: CTAGCT
+    39_Wirtualna: CTATAC
+    4_Wirtualna: TGACCA
+    40_Wirtualna: CTCAGA
+    41_Wirtualna: GACGAC
+    42_Wirtualna: TAATCG
+    5_Wirtualna: ACAGTG
+    6_Wirtualna: GCCAAT
+    8_Wirtualna: ACTTGA
+    9_Wirtualna: GATCAG
+
+
+reference_set:
+    _exp: GRCh38
+
+spikein_samples:
+    spk8: GTGGCC
+    spk16: GTTTCG
+    spk32: CGTACG
+    spk64: GAGTGG
+ 
+spikein_lengths:
+    spk8: 8
+    spk16: 16
+    spk32: 32
+    spk64: 64
+
+read_cycles:
+    R5: [1, 301, 1]
+    Ri: [302, 307, 2]
+    R3: [308, 608, 3]
+
+dupcheck_regions:
+    _exp: [[21, 35], [308, 322]]
+
+analysis_level: 1
+
+performance:
+    enable_gsnap: yes
+
+third_party_basecaller:
+    R5: ''
+
